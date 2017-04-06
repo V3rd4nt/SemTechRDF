@@ -1,0 +1,28 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX : <http://example.org/> 
+
+SELECT  ?p2 (avg(?nr) AS ?avgNr)
+WHERE
+  { ?p2 rdf:type :Person .
+    ?p2 :friend ?p
+    { SELECT  ?p (count(?f) AS ?nr)
+      WHERE
+        { ?p rdf:type :Person
+          OPTIONAL
+            { ?p :friend ?f}
+        }
+      GROUP BY ?p
+    }
+  }
+GROUP BY ?p2
+
+
+
+
+
+
+
+
+
+
+

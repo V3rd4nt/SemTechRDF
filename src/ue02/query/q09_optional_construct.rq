@@ -1,0 +1,18 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX : <http://example.org/> 
+
+CONSTRUCT 
+  { ?p a :Person.
+    ?p :age ?age.
+    ?p :friend ?f. }
+WHERE
+  { ?p  a :Person.
+    OPTIONAL { ?p :age ?age. }
+    OPTIONAL { ?p :friend ?f .}   
+  }
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX : <http://example.org/> 
+
+CONSTRUCT 
+  { ?x a :Friendship;
+       :from ?s; :to ?o;
+       :ffriend ?ff. }
+WHERE
+  { { ?s :friend ?o
+      FILTER(?s 
+             in (:bill, :mary)) 
+    }
+    BIND(uuid() AS ?x)
+    OPTIONAL { ?o :friend ?ff}
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
