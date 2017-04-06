@@ -1,19 +1,31 @@
 package rdf;
 
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.sparql.vocabulary.FOAF;
 
 public class person {
 
-    String name, address, birthday, employer;
-    char gender;
+    Resource res;
 
-    public person(Model m, String name, String address, String birthday, char gernder, String employer) {
-        this.name = name;
-        this.address = address;
-        this.birthday = birthday;
-        this.gender = gender;
-        this.employer = employer;
+    public person(Model model, String nsPrefix, String name) {
+        Resource res = model.createResource(nsPrefix + name);
     }
 
-
+    protected void setGender (Model model, String gender) {
+        model.add(res, FOAF.gender, model.createLiteral(gender));
+    }
+    protected void setName (Model model, String name) {
+        model.add(res, FOAF.name, model.createLiteral(name));
+    }
+    protected void setCompany (Model model, String companyName) {
+        Property prop = model.createProperty(FOAF.getURI() + "worksFor");
+        res.addProperty(prop, model.createTypedLiteral(companyName));
+    }
+    protected void setBirthday (Model model, String birthday) {
+        model.add(res, FOAF.birthday, model.createLiteral(birthday));
+    }
+    protected void setAddress (Model model, String address) {
+        Property prop = model.createProperty(FOAF.getURI() + "hasAddress");
+        res.addProperty(prop, model.createTypedLiteral(address));
+    }
 }
