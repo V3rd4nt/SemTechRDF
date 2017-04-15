@@ -9,6 +9,7 @@ public class Graph {
         ModelCreator mod = new ModelCreator();
 
         String person1 = "Tom";
+
         mod.createPerson(person1);
         mod.setPersonGender(person1, "male");
         mod.setBirthday(person1, "08.02.1991");

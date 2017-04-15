@@ -1,7 +1,6 @@
 package rdf;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-
 import java.util.SortedSet;
 import java.util.TreeSet;
 

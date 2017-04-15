@@ -17,7 +17,7 @@ public class Person implements Comparable<Person> {
     }
 
     protected void setName (String name) {
-        res.addProperty(FOAF.givenname, name);
+        res.addProperty(FOAF.name, name);
     }
 
     protected String getName() {
