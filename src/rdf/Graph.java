@@ -39,13 +39,15 @@ public class Graph {
         System.out.println("\n===============CHANGE=NAME==========================");
         mod.changeName("Max", "Sarah");
         System.out.println("\n===============CHANGE=GENDER========================");
-        mod.changeGender("Max", "female");
+        mod.changeGender("Sarah", "female");
         System.out.println("\n===============CHANGE=BIRTHDAY======================");
-        mod.changeBithday("Max", "02.02.1991");
+        mod.changeBirthday("Sarah", "02.02.1991");
         System.out.println("\n===============CHANGE=ADDRESS=======================");
-        mod.changeAddress("Max", "Seitenstraße 2, 4030 Linz");
+        mod.changeAddress("Sarah", "Seitenstraße 2, 4030 Linz");
         System.out.println("\n===============CHANGE=COMPANY=======================");
-        mod.changeCompany("Max", "SIEMENS");
+        mod.changeCompany("Sarah", "SIEMENS");
+        System.out.println("\n===============DELETE=PERSON========================");
+        mod.deletePerson("Sarah");
     }
 
     public static void createPerson(ModelCreator mod) throws IOException {
@@ -97,9 +99,5 @@ public class Graph {
         String newName = br.readLine();
         mod.changeName(name, newName);
         mod.write();
-    }
-
-    public static void seperatorLine() {
-        System.out.println("==========================================\n");
     }
 }

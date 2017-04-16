@@ -18,13 +18,26 @@ public class ModelCreator {
     public ModelCreator() {
         model = ModelFactory.createDefaultModel();
         model.setNsPrefix("Person", nsPersons);
+        model.setNsPrefix("PersonDeleted", nsPersonsDeleted);
         model.setNsPrefix("PersonProps", nsPersonProps);
         set = new TreeSet<>();
     }
 
     public void createPerson(String name) {
-        Person person = new Person(model, nsPersons, name);
+        Person person = new Person(model, nsPersons, nsPersonsDeleted, name);
         set.add(person);
+    }
+
+    public boolean deletePerson(String name) {
+        for (Person p : set){
+            if(p.getName().equals(name)) {
+                p.delete();
+                write();
+                set.remove(p);
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean setPersonGender(String name, String gender) {
@@ -52,7 +65,7 @@ public class ModelCreator {
         return false;
     }
 
-    public boolean changeBithday(String name, String newBirthday) {
+    public boolean changeBirthday(String name, String newBirthday) {
         for (Person p : set){
             if(p.getName().equals(name)) p.changeBirthday(newBirthday);
             write();
@@ -106,9 +119,5 @@ public class ModelCreator {
 
     public void write() {
         model.write(System.out, "TURTLE");
-    }
-
-    public Model get() {
-        return model;
     }
 }

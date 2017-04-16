@@ -8,12 +8,18 @@ public class Person implements Comparable<Person> {
 
     private Resource res;
     private Model model;
-    private String name, gender, address, birthday, companyName;
+    private String name, gender, address, birthday, companyName, nsPersons, nsPersonsDeleted, nsPersonProps;
 
-    public Person(Model model, String nsPersons, String name) {
+    public Person(Model model, String nsPersons, String nsPersonsDeleted, String name) {
         this.model = model;
+        this.nsPersons = nsPersons;
+        this.nsPersonsDeleted = nsPersonsDeleted;
         res = model.createResource(nsPersons + name);
         setName(name);
+    }
+
+    public void delete() {
+        deleteResource(nsPersonsDeleted, name);
     }
 
     protected void setName(String name) {
@@ -26,11 +32,7 @@ public class Person implements Comparable<Person> {
     }
 
     protected void changeName(String newName) {
-        update("PREFIX rdf: <"+RDF.getURI()+">\n" +
-                        "PREFIX foaf: <"+FOAF.getURI()+">\n" +
-                        "DELETE { ?person foaf:name \"" + name + "\" }\n" +
-                        "INSERT { ?person foaf:name \"" + newName + "\"\n} " +
-                        "WHERE { ?person foaf:name \"" + name + "\" }\n");
+        deleteResource(nsPersons, newName);
     }
 
     protected void setGender(String gender) {
@@ -48,6 +50,7 @@ public class Person implements Comparable<Person> {
 
     protected void setCompany(String companyName, String nsPersonProps) {
         this.companyName = companyName;
+        this.nsPersonProps = nsPersonProps;
         Property property = model.createProperty(nsPersonProps + "worksFor");
         res.addProperty(property, model.createLiteral(companyName));
     }
@@ -96,5 +99,18 @@ public class Person implements Comparable<Person> {
 
     private void update(String query) {
         UpdateAction.parseExecute(query, model);
+    }
+
+    private void deleteResource(String nameSpace, String resourceName) {
+        // remove statements where resource is subject
+        model.removeAll(res, null, (RDFNode) null);
+        // remove statements where resource is object
+        model.removeAll(null, null, res);
+        res = model.createResource(nameSpace + resourceName);
+        setName(resourceName);
+        setGender(gender);
+        setBirthday(birthday);
+        setCompany(companyName, nsPersonProps);
+        setAddress(address, nsPersonProps);
     }
 }
