@@ -17,8 +17,8 @@ public class ModelCreator {
 
     public ModelCreator() {
         model = ModelFactory.createDefaultModel();
-        model.setNsPrefix("nsPersons", nsPersons);
-        model.setNsPrefix("nsPersonProps", nsPersonProps);
+        model.setNsPrefix("Person", nsPersons);
+        model.setNsPrefix("PersonProps", nsPersonProps);
         set = new TreeSet<>();
     }
 
@@ -35,9 +35,27 @@ public class ModelCreator {
         return false;
     }
 
+    public boolean changeGender(String name, String newGender) {
+        for (Person p : set){
+            if(p.getName().equals(name)) p.changeGender(newGender);
+            write();
+            return true;
+        }
+        return false;
+    }
+
     public boolean setBirthday(String name, String birthday) {
         for (Person p : set){
             if(p.getName().equals(name)) p.setBirthday(birthday);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean changeBithday(String name, String newBirthday) {
+        for (Person p : set){
+            if(p.getName().equals(name)) p.changeBirthday(newBirthday);
+            write();
             return true;
         }
         return false;
@@ -51,9 +69,36 @@ public class ModelCreator {
         return false;
     }
 
-    public boolean setWorkPlace(String name, String company) {
+    public boolean changeAddress(String name, String newAddress) {
         for (Person p : set){
-            if(p.getName().equals(name)) p.setCompany(company, nsPersonProps);
+            if(p.getName().equals(name)) p.changeAddress(newAddress);
+            write();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean setCompany(String name, String companyName) {
+        for (Person p : set){
+            if(p.getName().equals(name)) p.setCompany(companyName, nsPersonProps);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean changeCompany(String name, String newConpanyName) {
+        for (Person p : set){
+            if(p.getName().equals(name)) p.changeCompany(newConpanyName);
+            write();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean changeName(String name, String newName) {
+        for (Person p : set){
+            if(p.getName().equals(name)) p.changeName(newName);
+            write();
             return true;
         }
         return false;
