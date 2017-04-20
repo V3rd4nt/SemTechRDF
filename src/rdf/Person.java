@@ -18,7 +18,7 @@ public class Person implements Comparable<Person> {
         setName(name);
     }
 
-    public void delete() {
+    protected void delete() {
         deleteResource(nsPersonsDeleted, name);
     }
 
