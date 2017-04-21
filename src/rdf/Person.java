@@ -5,7 +5,7 @@ import org.apache.jena.update.UpdateAction;
 import org.apache.jena.vocabulary.RDF;
 
 /**
- * Created by Peter, Natalia on 15.04.2017.
+ * Created by Peter & Natalia on 15.04.2017.
  */
 public class Person implements Comparable<Person> {
 

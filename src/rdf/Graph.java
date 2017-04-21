@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Scanner;
 
 /**
- * Created by Peter, Natalia on 06.04.2017.
+ * Created by Peter & Natalia on 06.04.2017.
  */
 public class Graph {
 
