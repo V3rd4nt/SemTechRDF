@@ -92,13 +92,13 @@ public class Graph {
         mod.write();
     }
 
-    public static void changePerson(ModelCreator mod) throws IOException { 
+    public static void changePerson(ModelCreator mod) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("What information do you want to change?\nEnter   n - name;   g - gender;   b - birthday; " +
                 "a - address;   c - company;   e - exit: ");
         char info;
         String name;
-        do {
+        do { 
             info = br.readLine().charAt(0);
             switch (info) {
                 case 'n':
