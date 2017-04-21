@@ -14,18 +14,19 @@ import java.util.Scanner;
  */
 public class Graph {
 
-    private ModelCreator mod;
+    private ModelCreator mod = new ModelCreator();
 
 
     public static void main (String[] args) throws IOException {
         ModelCreator mod = new ModelCreator();
-        // createDummyPerson(mod);
-        // changeDummyPerson(mod);
-        createPerson(mod);
-        changePerson(mod);
-    //    deletePerson(mod);
+        createDummyPerson(mod);
+        changeDummyPerson(mod);
+        deleteDummyPerson(mod);
+        //createPerson(mod);
+        //changePerson(mod);
+        //deletePerson(mod);
     }
-/*
+
     public static void createDummyPerson(ModelCreator mod) {
         String person = "Max";
         mod.createPerson(person);
@@ -39,6 +40,8 @@ public class Graph {
     public static void changeDummyPerson(ModelCreator mod) {
         System.out.println("\n===============CHANGE=NAME==========================");
         mod.changeName("Max", "Sarah");
+        System.out.println("\n===============CHANGE=NAME=ERROR====================");
+        mod.changeName("Max", "Tom");
         System.out.println("\n===============CHANGE=GENDER========================");
         mod.changeGender("Sarah", "female");
         System.out.println("\n===============CHANGE=BIRTHDAY======================");
@@ -47,10 +50,13 @@ public class Graph {
         mod.changeAddress("Sarah", "Seitenstraße 2, 4030 Linz");
         System.out.println("\n===============CHANGE=COMPANY=======================");
         mod.changeCompany("Sarah", "SIEMENS");
+    }
+
+    public static void deleteDummyPerson(ModelCreator mod) {
         System.out.println("\n===============DELETE=PERSON========================");
         mod.deletePerson("Sarah");
     }
-*/
+
     public static void createPerson(ModelCreator mod) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Name: ");
@@ -208,7 +214,7 @@ public class Graph {
 
     public static void deletePerson(ModelCreator mod) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Delete the person named: ");
+        System.out.print("Delete the person named: ");
         String name = br.readLine();
         mod.deletePerson(name);
     }
