@@ -78,19 +78,8 @@ public class Graph {
                     break;
             }
         } while (gender != 'm' && gender != 'f');
-        Scanner scanner = new Scanner(System.in);
-        DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-        System.out.print("Enter date of birth in the format 'dd.MM.yyyy': ");
         Date date = null;
-        while (date == null) {
-            String line = scanner.nextLine();
-            try {
-                date = format.parse(line);
-            } catch (ParseException e) {
-                System.out.print("Sorry, that's not valid. Please try again: ");
-            }
-        }
-        mod.setBirthday(person, format.format(date));
+        mod.checkDate(date);
         System.out.print("Address: ");
         mod.setAddress(person, br.readLine());
         System.out.print("Workplace: ");
@@ -104,101 +93,61 @@ public class Graph {
                 "a - address;   c - company;   e - exit: ");
         char info;
         String name;
-        do { 
+        do {
             info = br.readLine().charAt(0);
             switch (info) {
                 case 'n':
                     System.out.print("Name: ");
-                    do {
-                        name = br.readLine();
-                        if (mod.getClass().getName().equals(name)) {
-                            System.out.print("New name: ");
-                            mod.changeName(name, br.readLine());
-                        } else {
-                            System.out.println("The person doesn't exist. Enter another name: ");
-                        }
-                    } while (! mod.getClass().getName().equals(name));
+                    name = br.readLine();
+                    System.out.print("New Name: ");
+                    String newName = br.readLine();
+                    mod.changeName(name, newName);
                     System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
                             "a - address;   c - company;   or e - exit: ");
                     break;
                 case 'g':
                     char gender;
                     System.out.print("Edit person named: ");
+                    name = br.readLine();
+                    System.out.print("Gender (m/f): ");
                     do {
-                        name = br.readLine();
-                        if (mod.getClass().getName().equals(name)) {
-                            System.out.print("Gender (m/f): ");
-                            do {
-                                gender = br.readLine().charAt(0);
-                                switch (gender) {
-                                    case 'm':
-                                        mod.changeGender(name, "male");
-                                        break;
-                                    case 'f':
-                                        mod.changeGender(name, "female");
-                                        break;
-                                    default:
-                                        System.out.print("Sorry, that's not valid.\nA gender must be (m)ale or (f)emale. Please try again: ");
-                                        break;
-                                }
-                            } while (gender != 'm' && gender != 'f');
-                        } else {
-                            System.out.println("The person doesn't exist. Enter another name: ");
+                        gender = br.readLine().charAt(0);
+                        switch (gender) {
+                            case 'm':
+                                mod.changeGender(name, "male");
+                                break;
+                            case 'f':
+                                mod.changeGender(name, "female");
+                                break;
+                            default:
+                                System.out.print("Sorry, that's not valid.\nA gender must be (m)ale or (f)emale. Please try again: ");
+                                break;
                         }
-                    } while (! mod.getClass().getName().equals(name));
+                    } while (gender != 'm' && gender != 'f');
                     System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
                             "a - address;   c - company;   or e - exit: ");
                     break;
                 case 'b':
                     System.out.print("Edit person named: ");
-                    do {
-                        name = br.readLine();
-                        if (mod.getClass().getName().equals(name)) {
-                            Scanner scanner = new Scanner(System.in);
-                            DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-                            System.out.print("New date of birth in the format 'dd.MM.yyyy': ");
-                            Date newDate = null;
-                            while (newDate == null) {
-                                String input = scanner.nextLine();
-                                try {
-                                    newDate = format.parse(input);
-                                } catch (ParseException e) {
-                                    System.out.print("Date not valid. Please try again: ");
-                                }
-                            }
-                            mod.changeBirthday(name, format.format(newDate));
-                        } else {
-                            System.out.println("The person doesn't exist. Enter another name: ");
-                        }
-                    } while (! mod.getClass().getName().equals(name));
+                    name = br.readLine();
+                    Date newDate = null;
+                    mod.checkDate(newDate);
                     System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
                             "a - address;   c - company;   or e - exit: ");
                     break;
                 case 'a':
                     System.out.print("Edit person named: ");
-                    do {
-                        name = br.readLine();
-                        if (mod.getClass().getName().equals(name)) {
-                            System.out.print("New address: ");
-                            mod.changeAddress(name, br.readLine());
-                        } else {
-                            System.out.println("The person doesn't exist. Enter another name: ");
-                        }
-                    } while (! mod.getClass().getName().equals(name));
+                    name = br.readLine();
+                    System.out.print("New address: ");
+                    mod.changeAddress(name, br.readLine());
                     System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
                             "a - address;   c - company;   or e - exit: ");
                     break;
                 case 'c':
                     System.out.print("Edit person named: ");
-                    do {
-                        name = br.readLine();
-                        if (mod.getClass().getName().equals(name)) {
-                            System.out.print("New company: ");
-                            mod.changeCompany(name, br.readLine());
-                        } else {
-                            System.out.println("The person doesn't exist. Enter another name: ");
-                        }
-                    } while (! mod.getClass().getName().equals(name));
+                    name = br.readLine();
+                    System.out.print("New company: ");
+                    mod.changeCompany(name, br.readLine());
                     System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
                             "a - address;   c - company;   or e - exit: ");
                     break;

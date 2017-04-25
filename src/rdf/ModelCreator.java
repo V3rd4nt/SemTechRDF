@@ -1,6 +1,12 @@
 package rdf;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -24,7 +30,7 @@ public class ModelCreator {
     }
 
     public void personDoesNotExist (String name) {
-        System.out.println("ERROR:\tThe person " + name + " does not exist!");
+        System.out.print("ERROR:\tThe person " + name + " does not exist!");
     }
 
     public void createPerson(String name) {
@@ -63,7 +69,6 @@ public class ModelCreator {
         personDoesNotExist(name);
         return false;
     }
-
 
     public boolean setPersonGender(String name, String gender) {
         for (Person p : set){
@@ -163,6 +168,22 @@ public class ModelCreator {
         }
         personDoesNotExist(name);
         return false;
+    }
+
+    public String checkDate(Date date) {
+        Scanner scanner = new Scanner(System.in);
+        DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+        System.out.print("New date of birth in the format 'dd.MM.yyyy': ");
+        Date newDate = null;
+        while (date == null) {
+            String line = scanner.nextLine();
+            try {
+                date = format.parse(line);
+            } catch (ParseException e) {
+                System.out.print("Sorry, that's not valid. Please try again: ");
+            }
+        }
+        return String.valueOf(date);
     }
 
     public void write() {
