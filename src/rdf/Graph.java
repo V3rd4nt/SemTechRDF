@@ -58,35 +58,21 @@ public class Graph {
     }
 
     public static void createPerson(ModelCreator mod) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Name: ");
-        String person = br.readLine();
+        String person = createString();
         mod.createPerson(person);
         System.out.print("Gender (m/f): ");
-        char gender;
-        do {
-            gender = br.readLine().charAt(0);
-            switch (gender) {
-                case 'm':
-                    mod.setPersonGender(person, "male");
-                    break;
-                case 'f':
-                    mod.setPersonGender(person, "female");
-                    break;
-                default:
-                    System.out.print("Sorry, that's not valid.\nA gender must be (m)ale or (f)emale. Please try again: ");
-                    break;
-            }
-        } while (gender != 'm' && gender != 'f');
-        Date date = null;
-        mod.checkDate(date);
+        mod.setPersonGender(person);
+        System.out.print("New date of birth in the format 'dd.MM.yyyy': ");
+        mod.setBirthday(person);
         System.out.print("Address: ");
-        mod.setAddress(person, br.readLine());
+        mod.setAddress(person);
         System.out.print("Workplace: ");
-        mod.setCompany(person, br.readLine());
+        mod.setCompany(person);
         mod.write();
     }
 
+    // TODO: NOT READY YET
     public static void changePerson(ModelCreator mod) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("What information do you want to change?\nEnter   n - name;   g - gender;   b - birthday; " +
@@ -130,8 +116,7 @@ public class Graph {
                 case 'b':
                     System.out.print("Edit person named: ");
                     name = br.readLine();
-                    Date newDate = null;
-                    mod.checkDate(newDate);
+                    mod.changeBirthday(name);
                     System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
                             "a - address;   c - company;   or e - exit: ");
                     break;
@@ -166,5 +151,10 @@ public class Graph {
         System.out.print("Delete the person named: ");
         String name = br.readLine();
         mod.deletePerson(name);
+    }
+
+    private static String createString() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        return br.readLine();
     }
 }

@@ -2,6 +2,9 @@ package rdf;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -82,6 +85,11 @@ public class ModelCreator {
         return false;
     }
 
+    public boolean setPersonGender(String name) throws IOException {
+        String gender = createGenderString();
+        return setPersonGender(name, gender);
+    }
+
     public boolean changeGender(String name, String newGender) {
         for (Person p : set){
             if(p.getName().equals(name)) {
@@ -95,6 +103,11 @@ public class ModelCreator {
         return false;
     }
 
+    public boolean changeGender(String name) throws IOException {
+        String newGender = createGenderString();
+        return changeGender(name, newGender);
+    }
+
     public boolean setBirthday(String name, String birthday) {
         for (Person p : set){
             if(p.getName().equals(name)) {
@@ -105,6 +118,11 @@ public class ModelCreator {
         }
         personDoesNotExist(name);
         return false;
+    }
+
+    public boolean setBirthday(String name) {
+        String birthday = createBirthdayString();
+        return setBirthday(name, birthday);
     }
 
     public boolean changeBirthday(String name, String newBirthday) {
@@ -120,6 +138,11 @@ public class ModelCreator {
         return false;
     }
 
+    public boolean changeBirthday(String name) {
+        String newBirthday = createBirthdayString();
+        return changeBirthday(name, newBirthday);
+    }
+
     public boolean setAddress(String name, String address) {
         for (Person p : set){
             if(p.getName().equals(name)) {
@@ -130,6 +153,11 @@ public class ModelCreator {
         }
         personDoesNotExist(name);
         return false;
+    }
+
+    public boolean setAddress(String name) throws IOException {
+        String address = createString();
+        return setAddress(name, address);
     }
 
     public boolean changeAddress(String name, String newAddress) {
@@ -145,6 +173,11 @@ public class ModelCreator {
         return false;
     }
 
+    public boolean changeAddress (String name) throws IOException {
+        String newAddress = createString();
+        return changeAddress(name, newAddress);
+    }
+
     public boolean setCompany(String name, String companyName) {
         for (Person p : set){
             if(p.getName().equals(name)) {
@@ -155,6 +188,11 @@ public class ModelCreator {
         }
         personDoesNotExist(name);
         return false;
+    }
+
+    public boolean setCompany (String name) throws IOException {
+        String companyName = createString();
+        return changeAddress(name, companyName);
     }
 
     public boolean changeCompany(String name, String newCompanyName) {
@@ -170,11 +208,15 @@ public class ModelCreator {
         return false;
     }
 
-    public String checkDate(Date date) {
+    public boolean changeCompany (String name) throws IOException {
+        String newcompanyName = createString();
+        return changeCompany(name, newcompanyName);
+    }
+
+    private String createBirthdayString() {
         Scanner scanner = new Scanner(System.in);
         DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-        System.out.print("New date of birth in the format 'dd.MM.yyyy': ");
-        Date newDate = null;
+        Date date = null;
         while (date == null) {
             String line = scanner.nextLine();
             try {
@@ -184,6 +226,32 @@ public class ModelCreator {
             }
         }
         return String.valueOf(date);
+    }
+
+    private String createGenderString() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String gender = "";
+        char input;
+        do {
+            input = br.readLine().charAt(0);
+            switch (input) {
+                case 'm':
+                    gender = "male";
+                    break;
+                case 'f':
+                    gender = "female";
+                    break;
+                default:
+                    System.out.print("Sorry, that's not valid.\nA gender must be (m)ale or (f)emale. Please try again: ");
+                    break;
+            }
+        } while (input != 'm' && input != 'f');
+        return gender;
+    }
+
+    private String createString() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        return br.readLine();
     }
 
     public void write() {
