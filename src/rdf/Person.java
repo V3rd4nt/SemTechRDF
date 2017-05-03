@@ -1,110 +1,60 @@
 package rdf;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.sparql.vocabulary.FOAF;
-import org.apache.jena.update.UpdateAction;
-import org.apache.jena.vocabulary.RDF;
 
 /**
- * Created by Peter & Natalia on 15.04.2017.
+ * Created by Peter & Natalia.
  */
-public class Person implements Comparable<Person> {
+public class Person {
 
     private Resource res;
     private Model model;
-    private String name, gender, address, birthday, companyName, nsPersons, nsPersonsDeleted, nsPersonProps;
+    private String name;
 
-    public Person(Model model, String nsPersons, String nsPersonsDeleted, String name) {
+    public Person(Model model, String nsPersons, String name) {
         this.model = model;
-        this.nsPersons = nsPersons;
-        this.nsPersonsDeleted = nsPersonsDeleted;
         res = model.createResource(nsPersons + name);
-        setName(name);
+        System.out.println("INFO:\tCreated person resource " + name);
     }
 
-    protected void delete() {
+    /*protected void delete() {
         deleteResource(nsPersonsDeleted, name);
-    }
-
-    protected void setName(String name) {
-        this.name = name;
-        res.addProperty(FOAF.name, name);
-    }
+    }*/
 
     protected String getName() {
         return name;
     }
 
-    protected void changeName(String newName) {
-        deleteResource(nsPersons, newName);
+    protected void setName(String name) {
+        this.name = name;
+        res.addProperty(FOAF.name, name);
+        System.out.println("INFO:\tSet name property of person " + name + " to " + name);
+
     }
 
     protected void setGender(String gender) {
-        this.gender = gender;
         res.addProperty(FOAF.gender, model.createLiteral(gender));
-    }
-
-    protected void changeGender(String newGender) {
-        update("PREFIX rdf: <"+RDF.getURI()+">\n" +
-                        "PREFIX foaf: <"+FOAF.getURI()+">\n" +
-                        "DELETE { ?person foaf:gender \"" + gender + "\" }\n" +
-                        "INSERT { ?person foaf:gender \"" + newGender + "\"\n} " +
-                        "WHERE { ?person foaf:gender \"" + gender + "\" }\n");
+        System.out.println("INFO:\tSet gender property of person " + name + " to " + gender);
     }
 
     protected void setCompany(String companyName, String nsPersonProps) {
-        this.companyName = companyName;
-        this.nsPersonProps = nsPersonProps;
         Property property = model.createProperty(nsPersonProps + "worksFor");
         res.addProperty(property, model.createLiteral(companyName));
-    }
-
-    protected void changeCompany(String newCompanyName) {
-        update("PREFIX rdf: <"+RDF.getURI()+">\n" +
-                "PREFIX foaf: <"+FOAF.getURI()+">\n" +
-                "PREFIX PersonProps: <http://www.example.com/personproperties.rdf#>\n" +
-                "DELETE { ?person PersonProps:worksFor \"" + companyName + "\" }\n" +
-                "INSERT { ?person PersonProps:worksFor \"" + newCompanyName + "\"\n} " +
-                "WHERE { ?person PersonProps:worksFor \"" + companyName + "\" }\n");
+        System.out.println("INFO:\tSet company property of person " + name + " to " + companyName);
     }
 
     protected void setBirthday(String birthday) {
-        this.birthday = birthday;
         res.addProperty(FOAF.birthday, model.createLiteral(birthday));
-    }
-
-    protected void changeBirthday(String newBirthday) {
-        update("PREFIX rdf: <"+RDF.getURI()+">\n" +
-                "PREFIX foaf: <"+FOAF.getURI()+">\n" +
-                "DELETE { ?person foaf:birthday \"" + birthday + "\" }\n" +
-                "INSERT { ?person foaf:birthday \"" + newBirthday + "\"\n} " +
-                "WHERE { ?person foaf:birthday \"" + birthday + "\" }\n");
+        System.out.println("INFO:\tSet birthday property of person " + name + " to " + birthday);
     }
 
     protected void setAddress(String address, String nsPersonProps) {
-        this.address = address;
         Property prop = model.createProperty(nsPersonProps + "hasAddress");
         res.addProperty(prop, model.createTypedLiteral(address));
+        System.out.println("INFO:\tSet address property of person " + name + " to " + address);
     }
 
-    protected void changeAddress(String newAddress) {
-        update("PREFIX rdf: <"+RDF.getURI()+">\n" +
-                "PREFIX foaf: <"+FOAF.getURI()+">\n" +
-                "PREFIX PersonProps: <http://www.example.com/personproperties.rdf#>\n" +
-                "DELETE { ?person PersonProps:hasAddress \"" + address + "\" }\n" +
-                "INSERT { ?person PersonProps:hasAddress \"" + newAddress + "\"\n} " +
-                "WHERE { ?person PersonProps:hasAddress \"" + address + "\" }\n");
-    }
-
-    @Override
-    public int compareTo(Person p) {
-        return this.getName().compareTo(p.getName());
-    }
-
-    private void update(String query) {
-        UpdateAction.parseExecute(query, model);
-    }
-
-    private void deleteResource(String nameSpace, String resourceName) {
+    /*private void deleteResource(String nameSpace, String resourceName) {
         // remove statements where resource is subject
         model.removeAll(res, null, (RDFNode) null);
         // remove statements where resource is object
@@ -115,5 +65,5 @@ public class Person implements Comparable<Person> {
         setBirthday(birthday);
         setCompany(companyName, nsPersonProps);
         setAddress(address, nsPersonProps);
-    }
+    }*/
 }

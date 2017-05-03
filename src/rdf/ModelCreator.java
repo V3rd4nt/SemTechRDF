@@ -1,216 +1,168 @@
 package rdf;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import org.apache.jena.tdb.TDBFactory;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
- * Created by Peter & Natalia on 15.04.2017.
+ * Created by Peter & Natalia.
  */
 public class ModelCreator {
 
-    Model model;
-    String nsPersons = "http://www.example.com/persons";
-    String nsPersonsDeleted = "http://www.example.com/personsDeleted";
-    String nsPersonProps = "http://www.example.com/personproperties.rdf#";
-    private SortedSet<Person> set;
+    private Model model;
+    private Dataset dataset;
+    private Queries queries;
+    private Person person;
+    private String nsPersons = "http://www.example.com/persons/";
+    private String nsPersonProps = "http://www.example.com/personproperties.rdf#";
 
     public ModelCreator() {
-        model = ModelFactory.createDefaultModel();
+        dataset = TDBFactory.createDataset("d:/tools/semtech/dataset");
+        model = dataset.getDefaultModel().removeAll();
+        queries = new Queries(dataset, nsPersonProps);
         model.setNsPrefix("Person", nsPersons);
-        model.setNsPrefix("PersonDeleted", nsPersonsDeleted);
         model.setNsPrefix("PersonProps", nsPersonProps);
-        set = new TreeSet<>();
+    }
+
+    protected void writeModelDB() {
+        dataset.begin(ReadWrite.WRITE);
+        try {
+            dataset.commit();
+        } finally { dataset.end(); }
+        dataset.begin(ReadWrite.READ);
+        try {
+            dataset.getDefaultModel().write(System.out, "TURTLE");
+        } finally { dataset.end(); }
+        queries.displayModel();
     }
 
     public void personDoesNotExist (String name) {
         System.out.print("ERROR:\tThe person " + name + " does not exist!");
     }
 
-    public void createPerson(String name) {
-        Person person = new Person(model, nsPersons, nsPersonsDeleted, name);
-        set.add(person);
-        System.out.println("INFO:\tCreated person resource " + name);
-        System.out.println("INFO:\tSet name property of person " + name + " to " + name);
+    public void createPerson(String value) {
+        person = new Person(model, nsPersons, value);
+        person.setName(value);
     }
 
-    public boolean changeName(String name, String newName) {
-        for (Person p : set){
-            if(p.getName().equals(name)) {
-                p.changeName(newName);
-                write();
-                System.out.println("INFO:\tSet name property of person " + name + " to " + newName);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    public void createPerson() throws IOException{
+        System.out.print("Name: ");
+        String value = createString();
+        createPerson(value);
+        setGender();
+        setBirthday();
+        setAddress();
+        setCompany();
+        writeModelDB();
     }
 
-    public boolean deletePerson(String name) {
-        for (Person p : set){
-            if(p.getName().equals(name)) {
-                p.delete();
-                write();
-                set.remove(p);
-                System.out.println("INFO:\tPerson resource " + name + " has been deleted from\n" +
-                        "\t\tNamespace : " + nsPersons +
-                        "\n\t\tand added to\n" +
-                        "\t\tNamespace : " + nsPersonsDeleted);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    public void createDummyPerson() throws IOException {
+        String value = "Hanna";
+        createPerson(value);
+        setGender("male");
+        setBirthday("01.01.1992");
+        setAddress("Hauptstraße 1, 4020 Linz");
+        setCompany("Johannes Kepler University");
+        writeModelDB();
+        value = "Thomas";
+        createPerson(value);
+        setGender("male");
+        setBirthday("16.05.1985");
+        setAddress("Seitenstraße 1, 4030 Linz");
+        setCompany("FH Hagenberg");
+        writeModelDB();
+        value = "Sarah";
+        createPerson(value);
+        setGender("female");
+        setBirthday("27.11.1999");
+        setAddress("Gasse 14, 4010 Linz");
+        setCompany("Uni Wien");
+        writeModelDB();
     }
 
-    public boolean setPersonGender(String name, String gender) {
-        for (Person p : set){
-            if(p.getName().equals(name))  {
-                p.setGender(gender);
-                System.out.println("INFO:\tSet gender property of person " + name + " to " + gender);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    /*public void changeName(String name, String value) {
+        queries.changeName(name, value);
+    }*/
+
+    protected void setGender(String value) {
+        person.setGender(value);
     }
 
-    public boolean setPersonGender(String name) throws IOException {
-        String gender = createGenderString();
-        return setPersonGender(name, gender);
+    protected void setGender() throws IOException {
+        System.out.print("Gender (m/f): ");
+        String value = createGenderString();
+        setGender(value);
     }
 
-    public boolean changeGender(String name, String newGender) {
-        for (Person p : set){
-            if(p.getName().equals(name)) {
-                p.changeGender(newGender);
-                write();
-                System.out.println("INFO:\tChanged gender property of person " + name + " to " + newGender);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    protected void changeGender(String name, String value) throws IOException {
+        queries.changeGender(name, value);
     }
 
-    public boolean changeGender(String name) throws IOException {
-        String newGender = createGenderString();
-        return changeGender(name, newGender);
+    protected void changeGender(String name) throws IOException {
+        String value = createGenderString();
+        changeGender(name, value);
     }
 
-    public boolean setBirthday(String name, String birthday) {
-        for (Person p : set){
-            if(p.getName().equals(name)) {
-                p.setBirthday(birthday);
-                System.out.println("INFO:\tSet birthday property of person " + name + " to " + birthday);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    protected void setBirthday(String value) {
+        person.setBirthday(value);
     }
 
-    public boolean setBirthday(String name) {
-        String birthday = createBirthdayString();
-        return setBirthday(name, birthday);
+    protected void setBirthday() {
+        System.out.print("New date of birth in the format 'dd.MM.yyyy': ");
+        String value = createBirthdayString();
+        setBirthday(value);
     }
 
-    public boolean changeBirthday(String name, String newBirthday) {
-        for (Person p : set){
-            if(p.getName().equals(name)) {
-                p.changeBirthday(newBirthday);
-                write();
-                System.out.println("INFO:\tChanged birthday property of person " + name + " to " + newBirthday);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    protected void changeBirthday(String name, String value) throws IOException {
+        queries.changeBirthday(name, value);
     }
 
-    public boolean changeBirthday(String name) {
-        String newBirthday = createBirthdayString();
-        return changeBirthday(name, newBirthday);
+    protected void changeBirthday(String name) throws IOException {
+        String value = createBirthdayString();
+        changeBirthday(name, value);
     }
 
-    public boolean setAddress(String name, String address) {
-        for (Person p : set){
-            if(p.getName().equals(name)) {
-                p.setAddress(address, nsPersonProps);
-                System.out.println("INFO:\tSet address property of person " + name + " to " + address);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    protected void setAddress(String value) {
+        person.setAddress(value, nsPersonProps);
     }
 
-    public boolean setAddress(String name) throws IOException {
-        String address = createString();
-        return setAddress(name, address);
+    protected void setAddress() throws IOException {
+        System.out.print("Address: ");
+        String value = createString();
+        setAddress(value);
     }
 
-    public boolean changeAddress(String name, String newAddress) {
-        for (Person p : set){
-            if(p.getName().equals(name)) {
-                p.changeAddress(newAddress);
-                write();
-                System.out.println("INFO:\tChanged address property of person " + name + " to " + newAddress);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    protected void changeAddress(String name, String value) throws IOException {
+        queries.changeAddress(name, value);
     }
 
-    public boolean changeAddress (String name) throws IOException {
-        String newAddress = createString();
-        return changeAddress(name, newAddress);
+    protected void changeAddress(String name) throws IOException {
+        String value = createString();
+        changeAddress(name, value);
     }
 
-    public boolean setCompany(String name, String companyName) {
-        for (Person p : set){
-            if(p.getName().equals(name)) {
-                p.setCompany(companyName, nsPersonProps);
-                System.out.println("INFO:\tSet company property of person " + name + " to " + companyName);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    protected void setCompany(String value) {
+        person.setCompany(value, nsPersonProps);
     }
 
-    public boolean setCompany (String name) throws IOException {
-        String companyName = createString();
-        return changeAddress(name, companyName);
+    protected void setCompany() throws IOException {
+        System.out.print("Workplace: ");
+        String value = createString();
+        setCompany(value);
     }
 
-    public boolean changeCompany(String name, String newCompanyName) {
-        for (Person p : set){
-            if(p.getName().equals(name)) {
-                p.changeCompany(newCompanyName);
-                write();
-                System.out.println("INFO:\tChanged company property of person " + name + " to " + newCompanyName);
-                return true;
-            }
-        }
-        personDoesNotExist(name);
-        return false;
+    protected void changeCompany(String name, String value) throws IOException {
+        queries.changeCompany(name, value);
     }
 
-    public boolean changeCompany (String name) throws IOException {
-        String newcompanyName = createString();
-        return changeCompany(name, newcompanyName);
+    protected void changeCompany (String name) throws IOException {
+        String value = createString();
+        changeCompany(name, value);
     }
 
     private String createBirthdayString() {
@@ -242,7 +194,8 @@ public class ModelCreator {
                     gender = "female";
                     break;
                 default:
-                    System.out.print("Sorry, that's not valid.\nA gender must be (m)ale or (f)emale. Please try again: ");
+                    System.out.print("Sorry, that's not valid.\n" +
+                            "A gender must be (m)ale or (f)emale. Please try again: ");
                     break;
             }
         } while (input != 'm' && input != 'f');
@@ -254,7 +207,24 @@ public class ModelCreator {
         return br.readLine();
     }
 
-    public void write() {
+    /*private void readModelFile() {
+        file = new File(modelUri);
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        model = RDFDataMgr.loadModel(modelUri);
+    }*/
+
+
+    /*protected void writeModelFile() throws IOException {
+        Writer writer = new FileWriter(file);
+        model.write(writer, "TURTLE");
+        writer.close();
         model.write(System.out, "TURTLE");
-    }
+    }*/
+
 }
