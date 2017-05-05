@@ -1,8 +1,6 @@
 package rdf;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * Created by Peter & Natalia.
@@ -10,125 +8,96 @@ import java.io.InputStreamReader;
 public class Main {
 
     private ModelCreator mod = new ModelCreator();
-
+    private final static String mainMenuText = "\n<-MAIN-MENU->\n" +
+            "What do you like to do?\n\t(a)dd a new person\n" +
+            "\t(c)hange person information\n" + "\t(d)elete a person\n\td(e)lete all persons\n" +
+            "\t(l)ist all available persons\n\t(f)ilter the person list\n\t(q)uit\n\t: ";
+    private final static String changeMenuText = "\n<-CHANGE-INFORMATION->\n" +
+            "What information do you want to change?\n" +
+            "\t(g)ender\n\t(b)irthday\n\t(a)ddress\n\t(c)ompany\n\t(e)xit\n\t: ";
+    private final static String errorMsg = "Sorry, that's not valid input. Please try again: ";
 
     public static void main (String[] args) throws IOException {
         ModelCreator mod = new ModelCreator();
-        createDummyPerson(mod);
-        changeDummyPerson(mod);
-        //changeDummyPerson(mod);
-        //deleteDummyPerson(mod);
-        createPerson(mod);
-        //changePerson(mod);
-        //deletePerson(mod);
-    }
-
-    public static void createDummyPerson(ModelCreator mod) throws IOException {
-        mod.createDummyPerson();
-    }
-
-    public static void changeDummyPerson(ModelCreator mod) throws IOException {
-        /*System.out.println("\n===============CHANGE=NAME==========================");
-        mod.changeName("Hanna", "Tina");
-        System.out.println("\n===============CHANGE=NAME=ERROR====================");
-        mod.changeName("Max", "Tom");*/
-        System.out.println("\n===============CHANGE=GENDER========================");
-        mod.changeGender("Hanna", "female");
-        System.out.println("\n===============CHANGE=COMPANY=======================");
-        mod.changeCompany("Thomas", "SIEMENS");
-        System.out.println("\n===============CHANGE=BIRTHDAY======================");
-        mod.changeBirthday("Sarah", "02.02.1991");
-        System.out.println("\n===============CHANGE=ADDRESS=======================");
-        mod.changeAddress("Sarah", "Umfahrung 67, 1010 Wien");
-    }
-    public static void deleteDummyPerson(ModelCreator mod) {
-        System.out.println("\n===============DELETE=PERSON========================");
-        //mod.deletePerson("Sarah");*/
+        System.out.println("<-RDF-PERSON-DATABASE->");
+        System.out.print(mainMenuText);
+        char info;
+        do {
+            switch (info = ModelCreator.createChar()) {
+                case 'a':
+                    createPerson(mod);
+                    //mod.createDummyPersons();
+                    break;
+                case 'c':
+                    changePerson(mod);
+                    //mod.changeDummyPersons();
+                    break;
+                case 'd':
+                    //TODO
+                    deletePerson(mod);
+                    //mod.deletePerson();
+                    break;
+                case 'e':
+                    //TODO
+                    mod.deleteAllPersons();
+                    break;
+                case 'l':
+                    mod.listAllPersons();
+                    break;
+                case 'f':
+                    //TODO
+                    break;
+                case 'q':
+                    System.exit(0);
+                default:
+                    System.err.println(errorMsg);
+                    break;
+            }
+            System.out.print(mainMenuText);
+        } while (info != 'q');
     }
 
     public static void createPerson(ModelCreator mod) throws IOException {
-        System.out.println("\n===============CREATE=PERSON========================");
+        System.out.println("<-CREATE-PERSON->");
         mod.createPerson();
     }
 
-    // TODO: NOT READY YET
-    /*public static void changePerson(ModelCreator mod) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("What information do you want to change?\nEnter   n - name;   g - gender;   b - birthday; " +
-                "a - address;   c - company;   e - exit: ");
+    public static void changePerson(ModelCreator mod) throws IOException {
         char info;
-        String name;
+        System.out.println("\n<-CHANGE-MENU->");
+        System.out.print("Enter the name of the person you want to change information of: ");
+        String name = ModelCreator.createString();
+        System.out.print(changeMenuText);
         do {
-            info = br.readLine().charAt(0);
-            switch (info) {
-                case 'n':
-                    System.out.print("Name: ");
-                    name = br.readLine();
-                    System.out.print("New Name: ");
-                    String newName = br.readLine();
-                    mod.changeName(name, newName);
-                    System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
-                            "a - address;   c - company;   or e - exit: ");
-                    break;
+            switch (info = ModelCreator.createChar()) {
                 case 'g':
-                    char gender;
-                    System.out.print("Edit person named: ");
-                    name = br.readLine();
-                    System.out.print("Gender (m/f): ");
-                    do {
-                        gender = br.readLine().charAt(0);
-                        switch (gender) {
-                            case 'm':
-                                mod.changeGender(name, "male");
-                                break;
-                            case 'f':
-                                mod.changeGender(name, "female");
-                                break;
-                            default:
-                                System.out.print("Sorry, that's not valid.\nA gender must be (m)ale or (f)emale. Please try again: ");
-                                break;
-                        }
-                    } while (gender != 'm' && gender != 'f');
-                    System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
-                            "a - address;   c - company;   or e - exit: ");
+                    System.out.println("<-CHANGE-GENDER->");
+                    mod.changeGender(name);
                     break;
                 case 'b':
-                    System.out.print("Edit person named: ");
-                    name = br.readLine();
+                    System.out.println("<-CHANGE-BIRTHDAY->");
                     mod.changeBirthday(name);
-                    System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
-                            "a - address;   c - company;   or e - exit: ");
                     break;
                 case 'a':
-                    System.out.print("Edit person named: ");
-                    name = br.readLine();
-                    System.out.print("New address: ");
-                    mod.changeAddress(name, br.readLine());
-                    System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
-                            "a - address;   c - company;   or e - exit: ");
+                    System.out.println("<-CHANGE-ADDRESS->");
+                    mod.changeAddress(name);
                     break;
                 case 'c':
-                    System.out.print("Edit person named: ");
-                    name = br.readLine();
-                    System.out.print("New company: ");
-                    mod.changeCompany(name, br.readLine());
-                    System.out.print("For other changes press n - name;   g - gender;   b - birthday; " +
-                            "a - address;   c - company;   or e - exit: ");
+                    System.out.println("<-CHANGE-COMPANY->");
+                    mod.changeCompany(name);
                     break;
                 case 'e':
                     break;
                 default:
-                    System.out.println("Sorry, that's not valid input. Please try again: ");
+                    System.err.println(errorMsg);
                     break;
             }
+            System.out.print(changeMenuText);
         } while (info != 'e');
-        mod.write();
     }
 
     public static void deletePerson(ModelCreator mod) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("Delete the person named: ");
-        String name = br.readLine();
-        //mod.deletePerson(name);
-    }*/
+        System.out.println("<-DELETE-PERSON->");
+        mod.deletePerson();
+    }
 }
