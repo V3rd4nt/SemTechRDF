@@ -31,7 +31,7 @@ public class ModelCreator {
     public ModelCreator() {
         dataset = TDBFactory.createDataset("d:/tools/semtech/dataset");
         model = dataset.getDefaultModel();
-        queries = new Queries(dataset, nsPersonProps);
+        queries = new Queries(dataset, nsPersonProps, nsPersons);
         model.setNsPrefix("Person", nsPersons);
         model.setNsPrefix("PersonProps", nsPersonProps);
     }
@@ -58,17 +58,21 @@ public class ModelCreator {
 
     public void createPerson(String value) {
         person = new Person(model, nsPersons, value);
+        queries.personExists(value);
         person.setName(value);
     }
 
     public void createPerson() throws IOException{
         System.out.print(nameText);
-        createPerson(createString());
-        setGender();
-        setBirthday();
-        setAddress();
-        setCompany();
-        writeModelDB();
+        String name = createString();
+        if(!queries.personExists(name)) {
+            createPerson(name);
+            setGender();
+            setBirthday();
+            setAddress();
+            setCompany();
+            writeModelDB();
+        }
     }
 
     public void createDummyPersons() throws IOException {

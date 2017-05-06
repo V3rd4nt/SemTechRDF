@@ -13,11 +13,12 @@ import org.apache.jena.vocabulary.RDF;
 public class Queries {
 
     private Dataset dataset;
-    private String prefixesDefault, prefixPersonProps;
+    private String prefixesDefault, prefixPersonProps, prefixPersons;
 
-    public Queries(Dataset dataset, String nsPersonProps) {
+    public Queries(Dataset dataset, String nsPersonProps, String nsPersons) {
         this.dataset = dataset;
         this.prefixPersonProps = "PREFIX PersonProps: <" + nsPersonProps + ">\n";
+        this.prefixPersons = "PREFIX Person: <" + nsPersons + ">\n";
         this.prefixesDefault =  "PREFIX rdf: <"+RDF.getURI()+">\n" + "PREFIX foaf: <"+FOAF.getURI()+">\n";
     }
 
@@ -52,18 +53,30 @@ public class Queries {
         System.out.println("\tINFO:\tChanged address property of person " + name + " to " + address);
     }
 
+    protected void createNamedGraphs() {
+        //TODO: WRITE QUERIES FOR CREATING NAMED GRAPHS FOR EXISTING AND DELETED PERSONS
+    }
+
+    protected void addPerson(String name) {
+        //TODO: WRITE QUERY FOR ADDING A PERSON TO THE NAMED GRAPH FPR EXISITING PERSONS
+    }
+
     protected void deletePerson(String name) {
-        //TODO: WRITE DELETE QUERY
+        //TODO: WRITE QUERY FOR DELETING A PERSON FROM THE EXISITNG PERSONS GRAPH AND ADDING
+        //TODO: IT TO THE DELETED PERSONS GRAPH
     }
 
     protected void deleteAllPersons() {
-        //TODO: WRITE DELETE QUERY
+        //TODO: WRITE QUERY TO DELETE ALL EXISTING PERSONS FROM THE DATABASE
     }
 
     protected boolean personExists(String name) {
-        //TODO: WRITE ASK QUERY
-        System.out.print("\tERROR:\tThe person " + name + " does not exist!");
-        return false;
+        String query = prefixesDefault + prefixPersonProps +
+                "ASK { ?person foaf:name \"" + name + "\" . }";
+        if(output(query, 2)) {
+            System.out.print("\tERROR:\tThe person " + name + " already exists!\n");
+            return true;
+        } else return false;
     }
 
     private void updateDB (String query) {
@@ -88,21 +101,47 @@ public class Queries {
                         "?person foaf:gender ?gender. " +
                         "?person foaf:birthday ?birthday. " +
                         "?person PersonProps:worksFor ?company. " +
-                        "?person PersonProps:hasAddress ?address. }");
+                        "?person PersonProps:hasAddress ?address. }", 1);
     }
 
-    protected void filter(char choice) {
-        //TODO: WRTIE FILTER QUERY FOR GENDER AND LOCATION
+    protected void filter(int choice) {
+        switch (choice) {
+            case 1:
+                //TODO: WRTIE QUERY TO CREATE FILTERED RESULT SETS FOR FOR GENDER
+                output("", 1);
+                break;
+            case 2:
+                //TODO: WRTIE QUERY TO CREATE FILTERED RESULT SETS FOR LOCATION
+                output("", 1);
+                break;
+            default:
+                System.err.print("value " + choice + " is not recognized as mode parameter");
+        }
     }
 
-    protected void output(String query) {
+    protected boolean output(String query, int mode) {
+        boolean answer = false;
         dataset.begin(ReadWrite.READ);
         try {
             Query Q = QueryFactory.create(query);
-            try (QueryExecution qEx = QueryExecutionFactory.create(Q ,dataset) ) {
-                ResultSet res = qEx.execSelect();
-                ResultSetFormatter.out(System.out, res, Q);
+            try (QueryExecution qEx = QueryExecutionFactory.create(Q, dataset)) {
+                switch (mode) {
+                    case 1:
+                        // Write full information about all persons to console
+                        ResultSet res = qEx.execSelect();
+                        ResultSetFormatter.out(System.out, res, Q);
+                        break;
+                    case 2:
+                        // Determine if a particular person already exists
+                        answer = qEx.execAsk();
+                        break;
+                    default:
+                        System.err.print("value " + mode + " is not recognized as mode parameter");
+                }
             }
-        } finally { dataset.end(); }
+        } finally {
+            dataset.end();
+        }
+        return answer;
     }
 }
