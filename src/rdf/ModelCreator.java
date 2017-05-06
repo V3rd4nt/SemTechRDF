@@ -45,7 +45,7 @@ public class ModelCreator {
         try {
             dataset.getDefaultModel().write(System.out, "TURTLE");
         } finally { dataset.end(); }
-        queries.listAllPersons();
+        listAllPersons();
     }
 
     public void listAllPersons() {
@@ -58,7 +58,6 @@ public class ModelCreator {
 
     public void createPerson(String value) {
         person = new Person(model, nsPersons, value);
-        queries.personExists(value);
         person.setName(value);
     }
 
