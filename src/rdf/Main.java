@@ -69,40 +69,42 @@ public class Main {
     public static void changePerson(ModelCreator mod) throws IOException {
         char info;
         System.out.println("\n<-CHANGE-MENU->");
-        System.out.print("Enter the name of the person you want to change information of: ");
+        System.out.print("Enter the name of the person you want to change information for: ");
         String name = ModelCreator.createString();
-        System.out.print(changeMenuText);
-        do {
-            switch (info = ModelCreator.createChar()) {
-                case 'n':
-                    System.out.println("<-CHANGE-NAME->");
-                    LogHelper.logInfo(name);
-                    name = mod.changeName(name);
-                    break;
-                case 'g':
-                    System.out.println("<-CHANGE-GENDER->");
-                    mod.changeGender(name);
-                    break;
-                case 'b':
-                    System.out.println("<-CHANGE-BIRTHDAY->");
-                    mod.changeBirthday(name);
-                    break;
-                case 'a':
-                    System.out.println("<-CHANGE-ADDRESS->");
-                    mod.changeAddress(name);
-                    break;
-                case 'c':
-                    System.out.println("<-CHANGE-COMPANY->");
-                    mod.changeCompany(name);
-                    break;
-                case 'e':
-                    break;
-                default:
-                    LogHelper.logError(errorMsg);
-                    break;
-            }
+        if (mod.personExists(name)) {
             System.out.print(changeMenuText);
-        } while (info != 'e');
+            do {
+                switch (info = ModelCreator.createChar()) {
+                    case 'n':
+                        System.out.println("<-CHANGE-NAME->");
+                        LogHelper.logInfo(name);
+                        name = mod.changeName(name);
+                        break;
+                    case 'g':
+                        System.out.println("<-CHANGE-GENDER->");
+                        mod.changeGender(name);
+                        break;
+                    case 'b':
+                        System.out.println("<-CHANGE-BIRTHDAY->");
+                        mod.changeBirthday(name);
+                        break;
+                    case 'a':
+                        System.out.println("<-CHANGE-ADDRESS->");
+                        mod.changeAddress(name);
+                        break;
+                    case 'c':
+                        System.out.println("<-CHANGE-COMPANY->");
+                        mod.changeCompany(name);
+                        break;
+                    case 'e':
+                        break;
+                    default:
+                        LogHelper.logError(errorMsg);
+                        break;
+                }
+                System.out.print(changeMenuText);
+            } while (info != 'e');
+        } else LogHelper.logError("The person " + name + " does not exists!");
     }
 
     public static void deletePerson(ModelCreator mod) throws IOException {

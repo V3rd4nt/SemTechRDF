@@ -78,10 +78,7 @@ public class Queries {
     protected boolean personExists(String name) {
         String query = prefixesDefault + prefixPersonProps +
                 "ASK { ?person foaf:name \"" + name + "\" . }";
-        if(output(query, 2)) {
-            LogHelper.logError("The person " + name + " already exists!\n");
-            return true;
-        } else return false;
+        return (output(query, 2));
     }
 
     private void updateDB (String query) {

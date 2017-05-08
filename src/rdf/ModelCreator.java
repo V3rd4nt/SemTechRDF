@@ -40,11 +40,15 @@ public class ModelCreator {
         dataset.begin(ReadWrite.WRITE);
         try {
             dataset.commit();
-        } finally { dataset.end(); }
+        } finally {
+            dataset.end();
+        }
         dataset.begin(ReadWrite.READ);
         try {
             dataset.getDefaultModel().write(System.out, "TURTLE");
-        } finally { dataset.end(); }
+        } finally {
+            dataset.end();
+        }
         listAllPersons();
     }
 
@@ -61,17 +65,17 @@ public class ModelCreator {
         person.setName(value);
     }
 
-    public void createPerson() throws IOException{
+    public void createPerson() throws IOException {
         System.out.print(nameText);
         String name = createString();
-        if(!queries.personExists(name)) {
+        if (!personExists(name)) {
             createPerson(name);
             setGender();
             setBirthday();
             setAddress();
             setCompany();
             writeModelDB();
-        }
+        } else LogHelper.logError("The person " + name + " already exists!");
     }
 
     public void createDummyPersons() throws IOException {
@@ -115,7 +119,7 @@ public class ModelCreator {
         queries.deletePerson(value);
     }
 
-    public void deletePerson() throws IOException{
+    public void deletePerson() throws IOException {
         System.out.print(nameText);
         deletePerson(createString());
     }
@@ -198,7 +202,7 @@ public class ModelCreator {
         queries.changeCompany(name, value);
     }
 
-    public void changeCompany (String name) throws IOException {
+    public void changeCompany(String name) throws IOException {
         System.out.print(companyText);
         changeCompany(name, createString());
     }
@@ -245,6 +249,10 @@ public class ModelCreator {
     public static String createString() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         return br.readLine();
+    }
+
+    public boolean personExists(String name) {
+        return queries.personExists(name);
     }
 
     /*
