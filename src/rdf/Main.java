@@ -15,7 +15,7 @@ public class Main {
     private final static String changeMenuText = "\n<-CHANGE-INFORMATION->\n" +
             "What information do you want to change?\n" +
             "\t(n)ame\n\t(g)ender\n\t(b)irthday\n\t(a)ddress\n\t(c)ompany\n\t(e)xit\n\t: ";
-    private final static String errorMsg = "Sorry, that's not valid input. Please try again: ";
+    private final static String errorMsg = "Sorry, that's not a valid input. Please try again: ";
 
     public static void main (String[] args) throws IOException {
         ModelCreator mod = new ModelCreator();
@@ -34,18 +34,21 @@ public class Main {
                     break;
                 case 'd':
                     //TODO
-                    //mod.deletePerson();
-                    deletePerson(mod);
+                    //mod.deleteDummyPersons();
+                    //deletePerson(mod);
+                    LogHelper.logError("Needs to be implemented");
                     break;
                 case 'e':
                     //TODO
-                    mod.deleteAllPersons();
+                    //mod.deleteAllPersons();
+                    LogHelper.logError("Needs to be implemented");
                     break;
                 case 'l':
                     mod.listAllPersons();
                     break;
                 case 'f':
                     //TODO
+                    LogHelper.logError("Needs to be implemented");
                     break;
                 case 'q':
                     System.exit(0);
