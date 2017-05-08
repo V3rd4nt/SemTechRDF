@@ -33,24 +33,29 @@ public class Queries {
         updateDB(query);
     }
 
+    protected void changeName(String name, String newName) {
+        changeProperty(name, "foaf","name", newName);
+        LogHelper.logInfo("Changed name property to " + newName);
+    }
+
     protected void changeCompany(String name, String company) {
         changeProperty(name, "PersonProps","worksFor", company);
-        System.out.println("\tINFO:\tChanged company property of person " + name + " to " + company);
+        LogHelper.logInfo("Changed company property to " + company);
     }
 
     protected void changeGender(String name, String gender) {
         changeProperty(name, "foaf","gender", gender);
-        System.out.println("\tINFO:\tChanged gender property of person " + name + " to " + gender);
+        LogHelper.logInfo("Changed gender property to " + gender);
     }
 
     protected void changeBirthday(String name, String birthday) {
         changeProperty(name, "foaf","birthday", birthday);
-        System.out.println("\tINFO:\tChanged birthday property of person " + name + " to " + birthday);
+        LogHelper.logInfo("Changed birthday property to " + birthday);
     }
 
     protected void changeAddress(String name, String address) {
         changeProperty(name, "PersonProps","hasAddress", address);
-        System.out.println("\tINFO:\tChanged address property of person " + name + " to " + address);
+        LogHelper.logInfo("Changed address property to " + address);
     }
 
     protected void createNamedGraphs() {
@@ -74,7 +79,7 @@ public class Queries {
         String query = prefixesDefault + prefixPersonProps +
                 "ASK { ?person foaf:name \"" + name + "\" . }";
         if(output(query, 2)) {
-            System.out.print("\tERROR:\tThe person " + name + " already exists!\n");
+            LogHelper.logError("The person " + name + " already exists!\n");
             return true;
         } else return false;
     }
@@ -115,7 +120,7 @@ public class Queries {
                 output("", 1);
                 break;
             default:
-                System.err.print("value " + choice + " is not recognized as mode parameter");
+                LogHelper.logError("Value " + choice + " is not recognized as mode parameter");
         }
     }
 
@@ -136,7 +141,7 @@ public class Queries {
                         answer = qEx.execAsk();
                         break;
                     default:
-                        System.err.print("value " + mode + " is not recognized as mode parameter");
+                        LogHelper.logError("Value " + mode + " is not recognized as mode parameter");
                 }
             }
         } finally {

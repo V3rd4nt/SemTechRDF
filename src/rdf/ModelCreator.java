@@ -57,7 +57,7 @@ public class ModelCreator {
     }
 
     public void createPerson(String value) {
-        person = new Person(model, nsPersons, value);
+        person = new Person(model, nsPersons);
         person.setName(value);
     }
 
@@ -118,6 +118,17 @@ public class ModelCreator {
     public void deletePerson() throws IOException{
         System.out.print(nameText);
         deletePerson(createString());
+    }
+
+    private void changeName(String name, String value) {
+        queries.changeName(name, value);
+    }
+
+    public String changeName(String name) throws IOException {
+        System.out.print(nameText);
+        String value = createString();
+        changeName(name, value);
+        return value;
     }
 
     private void setGender(String value) {
@@ -201,7 +212,7 @@ public class ModelCreator {
             try {
                 date = format.parse(line);
             } catch (ParseException e) {
-                System.err.print("\tERROR:\tSorry, that's not valid. Please try again: ");
+                LogHelper.logError("Sorry, that's not valid. Please try again: ");
             }
         }
         return format.format(date);
@@ -216,8 +227,8 @@ public class ModelCreator {
                 case 'f':
                     return "female";
                 default:
-                    System.err.print("\tERROR:\tSorry, that's not valid.\n" +
-                            "\t\tA gender must be (m)ale or (f)emale. Please try again: ");
+                    LogHelper.logError("Sorry, that's not valid.\n" +
+                            "A gender must be (m)ale or (f)emale. Please try again: ");
                     break;
             }
         } while (input != 'm' && input != 'f');
@@ -226,7 +237,9 @@ public class ModelCreator {
 
     public static char createChar() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        return br.readLine().charAt(0);
+        String line = br.readLine();
+        if (line.length() == 0) return '\u0000';
+        else return line.charAt(0);
     }
 
     public static String createString() throws IOException {

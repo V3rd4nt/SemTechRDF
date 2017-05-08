@@ -14,7 +14,7 @@ public class Main {
             "\t(l)ist all available persons\n\t(f)ilter the person list\n\t(q)uit\n\t: ";
     private final static String changeMenuText = "\n<-CHANGE-INFORMATION->\n" +
             "What information do you want to change?\n" +
-            "\t(g)ender\n\t(b)irthday\n\t(a)ddress\n\t(c)ompany\n\t(e)xit\n\t: ";
+            "\t(n)ame\n\t(g)ender\n\t(b)irthday\n\t(a)ddress\n\t(c)ompany\n\t(e)xit\n\t: ";
     private final static String errorMsg = "Sorry, that's not valid input. Please try again: ";
 
     public static void main (String[] args) throws IOException {
@@ -25,17 +25,17 @@ public class Main {
         do {
             switch (info = ModelCreator.createChar()) {
                 case 'a':
-                    createPerson(mod);
                     //mod.createDummyPersons();
+                    createPerson(mod);
                     break;
                 case 'c':
-                    changePerson(mod);
                     //mod.changeDummyPersons();
+                    changePerson(mod);
                     break;
                 case 'd':
                     //TODO
-                    deletePerson(mod);
                     //mod.deletePerson();
+                    deletePerson(mod);
                     break;
                 case 'e':
                     //TODO
@@ -50,10 +50,11 @@ public class Main {
                 case 'q':
                     System.exit(0);
                 default:
-                    System.err.println(errorMsg);
+                    LogHelper.logError(errorMsg);
                     break;
             }
             System.out.print(mainMenuText);
+
         } while (info != 'q');
     }
 
@@ -70,6 +71,11 @@ public class Main {
         System.out.print(changeMenuText);
         do {
             switch (info = ModelCreator.createChar()) {
+                case 'n':
+                    System.out.println("<-CHANGE-NAME->");
+                    LogHelper.logInfo(name);
+                    name = mod.changeName(name);
+                    break;
                 case 'g':
                     System.out.println("<-CHANGE-GENDER->");
                     mod.changeGender(name);
@@ -89,7 +95,7 @@ public class Main {
                 case 'e':
                     break;
                 default:
-                    System.err.println(errorMsg);
+                    LogHelper.logError(errorMsg);
                     break;
             }
             System.out.print(changeMenuText);
