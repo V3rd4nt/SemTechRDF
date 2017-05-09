@@ -3,7 +3,6 @@ import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.tdb.TDBFactory;
-import org.apache.jena.vocabulary.RDF;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -28,7 +27,7 @@ public class ModelCreator {
     private final static String addressText = "Enter an Address: ";
     private final static String companyText = "Enter a Workplace: ";
 
-    private String nsPersons = "http://www.example.com/persons.rdf#";
+    private String nsPersons = "http://semTechRDF.org/persons.rdf#";
     private String nsFoaf = FOAF.getURI();
 
     public ModelCreator() {
