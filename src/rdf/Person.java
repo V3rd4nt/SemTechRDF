@@ -1,6 +1,8 @@
 package rdf;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.vocabulary.RDF;
 import java.util.UUID;
 
 /**
@@ -14,34 +16,35 @@ public class Person {
     public Person(Model model, String nsPersons) {
         String id = UUID.randomUUID().toString();
         this.model = model;
-        res = model.createResource(nsPersons + id);
+        res = ResourceFactory.createResource(nsPersons + id);
+        model.add(res, RDF.type, FOAF.Person);
         LogHelper.logInfo("Created person resource with UUID: " + id);
     }
 
     protected void setName(String name) {
-        res.addProperty(FOAF.name, name);
+        model.add(res, FOAF.name, model.createLiteral(name));
         LogHelper.logInfo("Set name property to " + name);
     }
 
     protected void setGender(String gender) {
-        res.addProperty(FOAF.gender, model.createLiteral(gender));
+        model.add(res, FOAF.gender, model.createLiteral(gender));
         LogHelper.logInfo("Set gender property to " + gender);
     }
 
-    protected void setCompany(String company, String nsPersonProps) {
-        Property property = model.createProperty(nsPersonProps + "worksFor");
-        res.addProperty(property, model.createLiteral(company));
+    protected void setCompany(String company, String nsFoaf) {
+        Property property = model.createProperty(nsFoaf + "worksFor");
+        model.add(res, property, model.createLiteral(company));
         LogHelper.logInfo("Set company property to " + company);
     }
 
     protected void setBirthday(String birthday) {
-        res.addProperty(FOAF.birthday, model.createLiteral(birthday));
+        model.add(res, FOAF.birthday, model.createLiteral(birthday));
         LogHelper.logInfo("Set birthday property to " + birthday);
     }
 
-    protected void setAddress(String address, String nsPersonProps) {
-        Property prop = model.createProperty(nsPersonProps + "hasAddress");
-        res.addProperty(prop, model.createTypedLiteral(address));
+    protected void setAddress(String address, String nsFoaf) {
+        Property prop = model.createProperty(nsFoaf + "hasAddress");
+        model.add(res, prop, model.createTypedLiteral(address));
         LogHelper.logInfo("Set address property to " + address);
     }
 }

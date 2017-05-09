@@ -1,7 +1,10 @@
 package rdf;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.vocabulary.RDF;
+
 import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,15 +28,20 @@ public class ModelCreator {
     private final static String addressText = "Enter an Address: ";
     private final static String companyText = "Enter a Workplace: ";
 
-    private String nsPersons = "http://www.example.com/persons/";
-    private String nsPersonProps = "http://www.example.com/personproperties.rdf#";
+    private String nsPersons = "http://www.example.com/persons.rdf#";
+    private String nsFoaf = FOAF.getURI();
 
     public ModelCreator() {
-        dataset = TDBFactory.createDataset("d:/tools/semtech/dataset");
+        String path = System.getProperty("user.home") + "/Desktop/SemtechRDF-TDB";
+        File directory = new File(path);
+        if (! directory.exists()){
+            directory.mkdirs();
+        }
+        dataset = TDBFactory.createDataset(path);
         model = dataset.getDefaultModel();
-        queries = new Queries(dataset, nsPersonProps, nsPersons);
+        queries = new Queries(dataset);
+        model.setNsPrefix("foaf", nsFoaf);
         model.setNsPrefix("Person", nsPersons);
-        model.setNsPrefix("PersonProps", nsPersonProps);
     }
 
     protected void writeModelDB() {
@@ -172,7 +180,7 @@ public class ModelCreator {
     }
 
     private void setAddress(String value) {
-        person.setAddress(value, nsPersonProps);
+        person.setAddress(value, nsFoaf);
     }
 
     public void setAddress() throws IOException {
@@ -190,7 +198,7 @@ public class ModelCreator {
     }
 
     private void setCompany(String value) {
-        person.setCompany(value, nsPersonProps);
+        person.setCompany(value, nsFoaf);
     }
 
     public void setCompany() throws IOException {

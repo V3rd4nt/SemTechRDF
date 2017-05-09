@@ -13,22 +13,22 @@ import org.apache.jena.vocabulary.RDF;
 public class Queries {
 
     private Dataset dataset;
-    private String prefixesDefault, prefixPersonProps, prefixPersons;
+    private final String prefixesDefault =
+            "PREFIX rdf: <"+RDF.getURI()+"> " +
+            "PREFIX foaf: <"+FOAF.getURI()+"> ";
 
-    public Queries(Dataset dataset, String nsPersonProps, String nsPersons) {
+    public Queries(Dataset dataset) {
         this.dataset = dataset;
-        this.prefixPersonProps = "PREFIX PersonProps: <" + nsPersonProps + ">\n";
-        this.prefixPersons = "PREFIX Person: <" + nsPersons + ">\n";
-        this.prefixesDefault =  "PREFIX rdf: <"+RDF.getURI()+">\n" + "PREFIX foaf: <"+FOAF.getURI()+">\n";
     }
 
     private void changeProperty(String name, String nameSpace, String property, String value) {
-        String query = prefixesDefault;
-        if (nameSpace.equals("PersonProps")) query += prefixPersonProps;
-        query += "DELETE { ?person " + nameSpace + ":" + property +" ?o }\n" +
-                "INSERT { ?person " + nameSpace + ":" + property + " \"" + value + "\" }\n" +
-                "WHERE { ?person foaf:name \"" + name + "\" .\n" +
-                "?person " + nameSpace + ":" + property + " ?o .\n}";
+        String query = prefixesDefault +
+                "DELETE { ?person " + nameSpace + ":" + property +" ?o } " +
+                "INSERT { ?person " + nameSpace + ":" + property + " \"" + value + "\" } " +
+                "WHERE { " +
+                "?person a foaf:Person. " +
+                "?person foaf:name \"" + name + "\" . " +
+                "?person " + nameSpace + ":" + property + " ?o . }";
         //System.out.print(query);
         updateDB(query);
     }
@@ -39,7 +39,7 @@ public class Queries {
     }
 
     protected void changeCompany(String name, String company) {
-        changeProperty(name, "PersonProps","worksFor", company);
+        changeProperty(name, "foaf","worksFor", company);
         LogHelper.logInfo("Changed company property to " + company);
     }
 
@@ -54,7 +54,7 @@ public class Queries {
     }
 
     protected void changeAddress(String name, String address) {
-        changeProperty(name, "PersonProps","hasAddress", address);
+        changeProperty(name, "foaf","hasAddress", address);
         LogHelper.logInfo("Changed address property to " + address);
     }
 
@@ -76,8 +76,10 @@ public class Queries {
     }
 
     protected boolean personExists(String name) {
-        String query = prefixesDefault + prefixPersonProps +
-                "ASK { ?person foaf:name \"" + name + "\" . }";
+        String query = prefixesDefault +
+                "ASK { " +
+                "?person a foaf:Person. " +
+                "?person foaf:name \"" + name + "\" . }";
         return (output(query, 2));
     }
 
@@ -97,13 +99,14 @@ public class Queries {
     }
 
     protected void listAllPersons() {
-        output(prefixesDefault + prefixPersonProps +
-                        "SELECT * WHERE { " +
-                        "?person foaf:name ?name. " +
-                        "?person foaf:gender ?gender. " +
-                        "?person foaf:birthday ?birthday. " +
-                        "?person PersonProps:worksFor ?company. " +
-                        "?person PersonProps:hasAddress ?address. }", 1);
+        output(prefixesDefault +
+                "SELECT * WHERE { " +
+                "?person a foaf:Person. " +
+                "?person foaf:name ?name. " +
+                "?person foaf:gender ?gender. " +
+                "?person foaf:birthday ?birthday. " +
+                "?person foaf:worksFor ?company. " +
+                "?person foaf:hasAddress ?address. }", 1);
     }
 
     protected void filter(int choice) {
