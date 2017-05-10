@@ -16,6 +16,7 @@ public class Main {
             "What information do you want to change?\n" +
             "\t(n)ame\n\t(g)ender\n\t(b)irthday\n\t(a)ddress\n\t(c)ompany\n\t(e)xit\n\t: ";
     private final static String errorMsg = "Sorry, that's not a valid input. Please try again: ";
+    private final static String filterNext = "<-FILTER-PERSON->\n" + "Do you want to try other filters? - 1(gender) or 2(location) - (e)xit:\n\t";
 
     public static void main (String[] args) throws IOException {
         ModelCreator mod = new ModelCreator();
@@ -48,7 +49,8 @@ public class Main {
                     break;
                 case 'f':
                     //TODO
-                    LogHelper.logError("Needs to be implemented");
+                    filterPersons(mod);
+                    //LogHelper.logError("Needs to be implemented");
                     break;
                 case 'q':
                     System.exit(0);
@@ -57,7 +59,6 @@ public class Main {
                     break;
             }
             System.out.print(mainMenuText);
-
         } while (info != 'q');
     }
 
@@ -111,4 +112,28 @@ public class Main {
         System.out.println("<-DELETE-PERSON->");
         mod.deletePerson();
     }
+
+    public static void filterPersons(ModelCreator mod) throws IOException {
+        System.out.println("<-FILTER-PERSON->\n" + "Enter what you want to filter - 1(gender) or 2(location) - (e)xit:\t");
+        char input;
+        do {
+            switch (input = ModelCreator.createChar()) {
+                case '1':
+                    System.out.println("<-FILTER-PERSON-GENDER>");
+                    mod.filerPerson1();
+                    break;
+                case '2':
+                    System.out.println("<-FILTER-PERSON-LOCATION>");
+                    mod.filerPerson2();
+                    break;
+                case 'e':
+                    break;
+                default:
+                    LogHelper.logError(errorMsg);
+                    break;
+            }
+            System.out.print(filterNext);
+        } while (input != 'e');
+    }
+
 }

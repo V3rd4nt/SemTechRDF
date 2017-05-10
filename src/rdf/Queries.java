@@ -7,6 +7,10 @@ import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 import org.apache.jena.vocabulary.RDF;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 /**
  * Created by Peter & Natalia.
  */
@@ -109,19 +113,58 @@ public class Queries {
                 "?person foaf:hasAddress ?address. }", 1);
     }
 
-    protected void filter(int choice) {
+    protected void filter(int choice) throws IOException {
         switch (choice) {
             case 1:
-                //TODO: WRTIE QUERY TO CREATE FILTERED RESULT SETS FOR FOR GENDER
-                output("", 1);
+                char genderInput = createChar();
+                do {
+                    if(genderInput == 'm') {
+                        output(prefixesDefault +
+                                "SELECT * WHERE { " +
+                                "?person foaf:name ?name. " +
+                                "?person foaf:gender ?g " +
+                                "FILTER (?g = 'male'). " +
+                                "}", 1);;
+                    } else if (genderInput == 'f') {
+                        output(prefixesDefault +
+                                "SELECT * WHERE { " +
+                                "?person foaf:name ?name. " +
+                                "?person foaf:gender ?g " +
+                                "FILTER (?g = 'female'). " +
+                                "}", 1);;
+                    } else
+                        LogHelper.logError("Sorry, that's not valid.\n" +
+                                "A gender must be (m)ale or (f)emale. Please try again: ");
+                } while (genderInput != 'm' && genderInput != 'f');
                 break;
             case 2:
                 //TODO: WRTIE QUERY TO CREATE FILTERED RESULT SETS FOR LOCATION
-                output("", 1);
+                String locationInput = createString();
+                output(prefixesDefault +
+                        "SELECT * WHERE { " +
+                        "?person foaf:name ?name. " +
+                        "?person foaf:hasAddress ?a " +
+                        "FILTER (?a = '" + locationInput + "'). " +
+                        "}", 1);;
                 break;
             default:
                 LogHelper.logError("Value " + choice + " is not recognized as mode parameter");
         }
+    }
+
+    protected static char createChar() throws IOException {
+        System.out.print("Enter a gender - (m)ale or (f)emale to filter: \n\t");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String line = br.readLine();
+        if (line.length() == 0) return '\u0000';
+        else return line.charAt(0);
+    }
+
+    protected static String createString() throws IOException {
+        System.out.print("Enter a location to filter: \n\t");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String line = br.readLine();
+        return line;
     }
 
     protected boolean output(String query, int mode) {
@@ -149,4 +192,5 @@ public class Queries {
         }
         return answer;
     }
+
 }

@@ -67,6 +67,10 @@ public class ModelCreator {
         queries.deleteAllPersons();
     }
 
+    public void filerPerson1() throws IOException { queries.filter(1); }
+
+    public void filerPerson2() throws IOException { queries.filter(2); }
+
     public void createPerson(String value) {
         person = new Person(model, nsPersons);
         person.setName(value);
@@ -205,8 +209,7 @@ public class ModelCreator {
         setCompany(createString());
     }
 
-    private void changeCompany(String name, String value) {
-        queries.changeCompany(name, value);
+    private void changeCompany(String name, String value) { queries.changeCompany(name, value);
     }
 
     public void changeCompany(String name) throws IOException {
