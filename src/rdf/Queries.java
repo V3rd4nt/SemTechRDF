@@ -14,52 +14,70 @@ public class Queries {
 
     private Dataset dataset;
     private final String prefixesDefault =
-            "PREFIX rdf: <"+RDF.getURI()+"> " +
-            "PREFIX foaf: <"+FOAF.getURI()+"> ";
+            "PREFIX rdf: <" + RDF.getURI() + "> " +
+            "PREFIX foaf: <" + FOAF.getURI()+ "> ";
+    private String perfixExPersonG, perfixDelPersonG, nsExPersonsG, nsDelPersonsG, tempName;
 
-    public Queries(Dataset dataset) {
+    public Queries(Dataset dataset, String nsExPersonsG, String nsDelPersonsG) {
         this.dataset = dataset;
+        this.nsExPersonsG = nsExPersonsG;
+        this.nsDelPersonsG = nsDelPersonsG;
+        perfixExPersonG = "PREFIX existing: <" + nsExPersonsG + "> ";
+        perfixDelPersonG = "PREFIX deleted: <" + nsDelPersonsG + "> ";
     }
 
     private void changeProperty(String name, String nameSpace, String property, String value) {
-        String query = prefixesDefault +
-                "DELETE { ?person " + nameSpace + ":" + property +" ?o } " +
+        updateDB(prefixesDefault +
+                "DELETE { ?person " + nameSpace + ":" + property +" ?value } " +
                 "INSERT { ?person " + nameSpace + ":" + property + " \"" + value + "\" } " +
                 "WHERE { " +
                 "?person a foaf:Person. " +
-                "?person foaf:name \"" + name + "\" . " +
-                "?person " + nameSpace + ":" + property + " ?o . }";
-        //System.out.print(query);
-        updateDB(query);
+                "?person foaf:name \"" + name + "\". " +
+                "?person " + nameSpace + ":" + property + " ?value. }");
     }
 
     protected void changeName(String name, String newName) {
+        tempName = newName;
         changeProperty(name, "foaf","name", newName);
         LogHelper.logInfo("Changed name property to " + newName);
+        listPersons(newName, "foaf", "name");
     }
 
     protected void changeCompany(String name, String company) {
+        tempName = name;
         changeProperty(name, "foaf","worksFor", company);
         LogHelper.logInfo("Changed company property to " + company);
+        listPersons(name, "foaf", "worksFor");
     }
 
     protected void changeGender(String name, String gender) {
+        tempName = name;
         changeProperty(name, "foaf","gender", gender);
         LogHelper.logInfo("Changed gender property to " + gender);
+        listPersons(name, "foaf", "gender");
     }
 
     protected void changeBirthday(String name, String birthday) {
+        tempName = name;
         changeProperty(name, "foaf","birthday", birthday);
         LogHelper.logInfo("Changed birthday property to " + birthday);
+        listPersons(name, "foaf", "birthday");
     }
 
     protected void changeAddress(String name, String address) {
+        tempName = name;
         changeProperty(name, "foaf","hasAddress", address);
         LogHelper.logInfo("Changed address property to " + address);
+        listPersons(name, "foaf", "hasAddress");
     }
 
     protected void createNamedGraphs() {
-        //TODO: WRITE QUERIES FOR CREATING NAMED GRAPHS FOR EXISTING AND DELETED PERSONS
+        updateDB("CREATE GRAPH <" + nsExPersonsG + ">");
+        //listGraph(nsExPersonsG);
+        LogHelper.logInfo("Created graph <" + nsExPersonsG + ">");
+        updateDB("CREATE GRAPH <" + nsDelPersonsG + ">");
+        //listGraph(nsDelPersonsG);
+        LogHelper.logInfo("Created graph <" + nsDelPersonsG + ">");
     }
 
     protected void addPerson(String name) {
@@ -76,11 +94,10 @@ public class Queries {
     }
 
     protected boolean personExists(String name) {
-        String query = prefixesDefault +
+        return (output(prefixesDefault +
                 "ASK { " +
                 "?person a foaf:Person. " +
-                "?person foaf:name \"" + name + "\" . }";
-        return (output(query, 2));
+                "?person foaf:name \"" + name + "\". }", 2));
     }
 
     private void updateDB (String query) {
@@ -95,7 +112,6 @@ public class Queries {
         } finally {
             dataset.end();
         }
-        listAllPersons();
     }
 
     protected void listAllPersons() {
@@ -107,6 +123,20 @@ public class Queries {
                 "?person foaf:birthday ?birthday. " +
                 "?person foaf:worksFor ?company. " +
                 "?person foaf:hasAddress ?address. }", 1);
+    }
+
+    protected void listPersons(String name, String nameSpace, String property) {
+        output(prefixesDefault +
+                "SELECT * WHERE { " +
+                "?person a foaf:Person. " +
+                "?person foaf:name \"" + name + "\" . " +
+                "?person " + nameSpace + ":" + property + " ?" + property + ". }", 1);
+    }
+
+    protected void listGraph(String nsPersonG) {
+        output(prefixesDefault +
+                "SELECT * WHERE { " +
+                "GRAPH <" + nsPersonG + "> { }. }", 1);
     }
 
     protected void filter(int choice) {

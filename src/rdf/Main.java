@@ -9,48 +9,48 @@ public class Main {
 
     private ModelCreator mod = new ModelCreator();
     private final static String mainMenuText = "\n<-MAIN-MENU->\n" +
-            "What do you like to do?\n\t(a)dd a new person\n" +
-            "\t(c)hange person information\n" + "\t(d)elete a person\n\td(e)lete all persons\n" +
-            "\t(l)ist all available persons\n\t(f)ilter the person list\n\t(q)uit\n\t: ";
+            "What do you like to do?\n\t(1) add a new person\n" +
+            "\t(2) change person information\n" + "\t(4) delete a person\n\t(5) delete all persons\n" +
+            "\t(6) list all available persons\n\t(7) filter the person list\n\t(0) exit program\n\t: ";
     private final static String changeMenuText = "\n<-CHANGE-INFORMATION->\n" +
             "What information do you want to change?\n" +
-            "\t(n)ame\n\t(g)ender\n\t(b)irthday\n\t(a)ddress\n\t(c)ompany\n\t(e)xit\n\t: ";
+            "\t(1) name\n\t(2) gender\n\t(3) birthday\n\t(4) address\n\t(5) company\n\t(0) back\n\t: ";
     private final static String errorMsg = "Sorry, that's not a valid input. Please try again: ";
 
     public static void main (String[] args) throws IOException {
-        ModelCreator mod = new ModelCreator();
         System.out.println("<-RDF-PERSON-DATABASE->");
+        ModelCreator mod = new ModelCreator();
         System.out.print(mainMenuText);
         char info;
         do {
             switch (info = ModelCreator.createChar()) {
-                case 'a':
+                case '1':
                     //mod.createDummyPersons();
                     createPerson(mod);
                     break;
-                case 'c':
+                case '2':
                     //mod.changeDummyPersons();
                     changePerson(mod);
                     break;
-                case 'd':
+                case '3':
                     //TODO
                     //mod.deleteDummyPersons();
                     //deletePerson(mod);
                     LogHelper.logError("Needs to be implemented");
                     break;
-                case 'e':
+                case '4':
                     //TODO
                     //mod.deleteAllPersons();
                     LogHelper.logError("Needs to be implemented");
                     break;
-                case 'l':
+                case '5':
                     mod.listAllPersons();
                     break;
-                case 'f':
+                case '6':
                     //TODO
                     LogHelper.logError("Needs to be implemented");
                     break;
-                case 'q':
+                case '0':
                     System.exit(0);
                 default:
                     LogHelper.logError(errorMsg);
@@ -58,7 +58,7 @@ public class Main {
             }
             System.out.print(mainMenuText);
 
-        } while (info != 'q');
+        } while (info != '0');
     }
 
     public static void createPerson(ModelCreator mod) throws IOException {
@@ -75,35 +75,35 @@ public class Main {
             System.out.print(changeMenuText);
             do {
                 switch (info = ModelCreator.createChar()) {
-                    case 'n':
+                    case '1':
                         System.out.println("<-CHANGE-NAME->");
                         LogHelper.logInfo(name);
                         name = mod.changeName(name);
                         break;
-                    case 'g':
+                    case '2':
                         System.out.println("<-CHANGE-GENDER->");
                         mod.changeGender(name);
                         break;
-                    case 'b':
+                    case '3':
                         System.out.println("<-CHANGE-BIRTHDAY->");
                         mod.changeBirthday(name);
                         break;
-                    case 'a':
+                    case '4':
                         System.out.println("<-CHANGE-ADDRESS->");
                         mod.changeAddress(name);
                         break;
-                    case 'c':
+                    case '5':
                         System.out.println("<-CHANGE-COMPANY->");
                         mod.changeCompany(name);
                         break;
-                    case 'e':
+                    case '0':
                         break;
                     default:
                         LogHelper.logError(errorMsg);
                         break;
                 }
                 System.out.print(changeMenuText);
-            } while (info != 'e');
+            } while (info != '0');
         } else LogHelper.logError("The person " + name + " does not exists!");
     }
 

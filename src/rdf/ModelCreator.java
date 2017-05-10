@@ -28,19 +28,24 @@ public class ModelCreator {
     private final static String companyText = "Enter a Workplace: ";
 
     private String nsPersons = "http://semTechRDF.org/persons.rdf#";
+    private String nsExPersonsG = "http://semTechRDF.org/ex-persons.rdf#";
+    private String nsDelPersonsG = "http://semTechRDF.org/del-persons.rdf#";
     private String nsFoaf = FOAF.getURI();
 
     public ModelCreator() {
         String path = System.getProperty("user.home") + "/Desktop/SemtechRDF-TDB";
         File directory = new File(path);
-        if (! directory.exists()){
+        if (!directory.exists()){
             directory.mkdirs();
         }
         dataset = TDBFactory.createDataset(path);
         model = dataset.getDefaultModel();
-        queries = new Queries(dataset);
+        queries = new Queries(dataset, nsExPersonsG, nsDelPersonsG);
         model.setNsPrefix("foaf", nsFoaf);
         model.setNsPrefix("Person", nsPersons);
+        model.setNsPrefix("existing", nsExPersonsG);
+        model.setNsPrefix("deleted", nsDelPersonsG);
+        queries.createNamedGraphs();
     }
 
     protected void writeModelDB() {
