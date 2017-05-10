@@ -151,15 +151,15 @@ public class Queries {
                         output(prefixesDefault +
                                 "SELECT * WHERE { " +
                                 "?person foaf:name ?name. " +
-                                "?person foaf:gender ?g " +
-                                "FILTER (?g = 'male'). " +
+                                "?person foaf:gender ?gender " +
+                                "FILTER (?gender = 'male'). " +
                                 "}", 1);;
                     } else if (genderInput == 'f') {
                         output(prefixesDefault +
                                 "SELECT * WHERE { " +
                                 "?person foaf:name ?name. " +
-                                "?person foaf:gender ?g " +
-                                "FILTER (?g = 'female'). " +
+                                "?person foaf:gender ?gender " +
+                                "FILTER (?gender = 'female'). " +
                                 "}", 1);;
                     } else
                         LogHelper.logError(ModelCreator.errorMsgGender);
@@ -171,8 +171,8 @@ public class Queries {
                 output(prefixesDefault +
                         "SELECT * WHERE {" +
                         "?person foaf:name ?name. " +
-                        "?person foaf:hasAddress ?a " +
-                        "FILTER regex(str(?a), '" + locationInput + "', 'i'). " +
+                        "?person foaf:hasAddress ?address " +
+                        "FILTER regex(str(?address), '" + locationInput + "', 'i'). " +
                         "}", 1);;
                 break;
             default:

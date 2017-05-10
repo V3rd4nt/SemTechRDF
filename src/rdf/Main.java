@@ -28,12 +28,11 @@ public class Main {
             "\t(0) back\n" +
             "\t: ";
     private final static String filterMenuText = "\n<-FILTER-PERSON->\n" +
-            "Do you want to try other filters?\n" +
+            "What filter do you want to try?\n" +
             "\t(1) gender\n" +
             "\t(2) location\n" +
             "\t(0) cancel\n" +
             "\t:";
-    private final static String errorMsg = "Sorry, that's not a valid input. Please try again: ";
 
     public static void main (String[] args) throws IOException {
         System.out.println("<-RDF-PERSON-DATABASE->");
@@ -70,7 +69,7 @@ public class Main {
                 case '0':
                     System.exit(0);
                 default:
-                    LogHelper.logError(errorMsg);
+                    LogHelper.logError(ModelCreator.errorMsg);
                     break;
             }
             System.out.print(mainMenuText);
@@ -116,7 +115,7 @@ public class Main {
                     case '0':
                         break;
                     default:
-                        LogHelper.logError(errorMsg);
+                        LogHelper.logError(ModelCreator.errorMsg);
                         break;
                 }
                 System.out.print(changeMenuText);
@@ -145,7 +144,7 @@ public class Main {
                 case '0':
                     break;
                 default:
-                    LogHelper.logError(errorMsg);
+                    LogHelper.logError(ModelCreator.errorMsg);
                     break;
             }
             System.out.print(filterMenuText);

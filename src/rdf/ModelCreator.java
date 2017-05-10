@@ -26,8 +26,8 @@ public class ModelCreator {
     protected final static String birthdayText = "Enter the date of birth in the format 'dd.MM.yyyy': ";
     protected final static String addressText = "Enter an Address: ";
     protected final static String companyText = "Enter a Workplace: ";
-    protected final static String errorMsg = "Sorry, that's not valid. Please try again: ";
-    protected final static String errorMsgGender = "Sorry, that's not valid.\n" +
+    protected final static String errorMsg = "Sorry, that's not a valid input. Please try again: ";
+    protected final static String errorMsgGender = "Sorry, that's not valid a valid input.\n" +
             "A gender must be (m)ale or (f)emale. Please try again: ";
 
     private String nsPersons = "http://semTechRDF.org/persons.rdf#";
