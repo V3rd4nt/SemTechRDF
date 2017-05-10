@@ -9,12 +9,30 @@ public class Main {
 
     private ModelCreator mod = new ModelCreator();
     private final static String mainMenuText = "\n<-MAIN-MENU->\n" +
-            "What do you like to do?\n\t(1) add a new person\n" +
-            "\t(2) change person information\n" + "\t(4) delete a person\n\t(5) delete all persons\n" +
-            "\t(6) list all available persons\n\t(7) filter the person list\n\t(0) exit program\n\t: ";
+            "What do you like to do?\n" +
+            "\t(1) add a new person\n" +
+            "\t(2) change person information\n" +
+            "\t(3) delete a person\n" +
+            "\t(4) delete all persons\n" +
+            "\t(5) list all available persons\n" +
+            "\t(6) filter the person list\n" +
+            "\t(0) exit program\n" +
+            "\t: ";
     private final static String changeMenuText = "\n<-CHANGE-INFORMATION->\n" +
             "What information do you want to change?\n" +
-            "\t(1) name\n\t(2) gender\n\t(3) birthday\n\t(4) address\n\t(5) company\n\t(0) back\n\t: ";
+            "\t(1) name\n" +
+            "\t(2) gender\n" +
+            "\t(3) birthday\n" +
+            "\t(4) address\n" +
+            "\t(5) company\n" +
+            "\t(0) back\n" +
+            "\t: ";
+    private final static String filterMenuText = "\n<-FILTER-PERSON->\n" +
+            "Do you want to try other filters?\n" +
+            "\t(1) gender\n" +
+            "\t(2) location\n" +
+            "\t(0) cancel\n" +
+            "\t:";
     private final static String errorMsg = "Sorry, that's not a valid input. Please try again: ";
 
     public static void main (String[] args) throws IOException {
@@ -47,8 +65,7 @@ public class Main {
                     mod.listAllPersons();
                     break;
                 case '6':
-                    //TODO
-                    LogHelper.logError("Needs to be implemented");
+                    filterPersons(mod);
                     break;
                 case '0':
                     System.exit(0);
@@ -110,5 +127,28 @@ public class Main {
     public static void deletePerson(ModelCreator mod) throws IOException {
         System.out.println("<-DELETE-PERSON->");
         mod.deletePerson();
+    }
+
+    public static void filterPersons(ModelCreator mod) throws IOException {
+        System.out.println(filterMenuText);
+        char input;
+        do {
+            switch (input = ModelCreator.createChar()) {
+                case '1':
+                    System.out.println("<-FILTER-PERSON-GENDER>");
+                    mod.filerPersonGender();
+                    break;
+                case '2':
+                    System.out.println("<-FILTER-PERSON-LOCATION>");
+                    mod.filerPersonLocation();
+                    break;
+                case '0':
+                    break;
+                default:
+                    LogHelper.logError(errorMsg);
+                    break;
+            }
+            System.out.print(filterMenuText);
+        } while (input != '0');
     }
 }

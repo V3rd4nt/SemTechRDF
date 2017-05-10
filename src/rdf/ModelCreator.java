@@ -21,11 +21,14 @@ public class ModelCreator {
     private Queries queries;
     private Person person;
 
-    private final static String nameText = "Enter a name: ";
-    private final static String genderText = "Enter a gender - (m)ale or (f)emale: ";
-    private final static String birthdayText = "Enter the date of birth in the format 'dd.MM.yyyy': ";
-    private final static String addressText = "Enter an Address: ";
-    private final static String companyText = "Enter a Workplace: ";
+    protected final static String nameText = "Enter a name: ";
+    protected final static String genderText = "Enter a gender - (m)ale or (f)emale: ";
+    protected final static String birthdayText = "Enter the date of birth in the format 'dd.MM.yyyy': ";
+    protected final static String addressText = "Enter an Address: ";
+    protected final static String companyText = "Enter a Workplace: ";
+    protected final static String errorMsg = "Sorry, that's not valid. Please try again: ";
+    protected final static String errorMsgGender = "Sorry, that's not valid.\n" +
+            "A gender must be (m)ale or (f)emale. Please try again: ";
 
     private String nsPersons = "http://semTechRDF.org/persons.rdf#";
     private String nsExPersonsG = "http://semTechRDF.org/ex-persons.rdf#";
@@ -72,9 +75,13 @@ public class ModelCreator {
         queries.deleteAllPersons();
     }
 
-    public void filerPerson1() throws IOException { queries.filter(1); }
+    public void filerPersonGender() throws IOException {
+        queries.filter(1);
+    }
 
-    public void filerPerson2() throws IOException { queries.filter(2); }
+    public void filerPersonLocation() throws IOException {
+        queries.filter(2);
+    }
 
     public void createPerson(String value) {
         person = new Person(model, nsPersons);
@@ -231,7 +238,7 @@ public class ModelCreator {
             try {
                 date = format.parse(line);
             } catch (ParseException e) {
-                LogHelper.logError("Sorry, that's not valid. Please try again: ");
+                LogHelper.logError(errorMsg);
             }
         }
         return format.format(date);
@@ -246,8 +253,7 @@ public class ModelCreator {
                 case 'f':
                     return "female";
                 default:
-                    LogHelper.logError("Sorry, that's not valid.\n" +
-                            "A gender must be (m)ale or (f)emale. Please try again: ");
+                    LogHelper.logError(errorMsgGender);
                     break;
             }
         } while (input != 'm' && input != 'f');

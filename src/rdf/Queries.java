@@ -7,6 +7,8 @@ import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 import org.apache.jena.vocabulary.RDF;
 
+import java.io.IOException;
+
 /**
  * Created by Peter & Natalia.
  */
@@ -139,15 +141,39 @@ public class Queries {
                 "GRAPH <" + nsPersonG + "> { }. }", 1);
     }
 
-    protected void filter(int choice) {
+    protected void filter(int choice) throws IOException {
         switch (choice) {
             case 1:
-                //TODO: WRTIE QUERY TO CREATE FILTERED RESULT SETS FOR FOR GENDER
-                output("", 1);
+                System.out.print(ModelCreator.genderText);
+                char genderInput = ModelCreator.createChar();
+                do {
+                    if(genderInput == 'm') {
+                        output(prefixesDefault +
+                                "SELECT * WHERE { " +
+                                "?person foaf:name ?name. " +
+                                "?person foaf:gender ?g " +
+                                "FILTER (?g = 'male'). " +
+                                "}", 1);;
+                    } else if (genderInput == 'f') {
+                        output(prefixesDefault +
+                                "SELECT * WHERE { " +
+                                "?person foaf:name ?name. " +
+                                "?person foaf:gender ?g " +
+                                "FILTER (?g = 'female'). " +
+                                "}", 1);;
+                    } else
+                        LogHelper.logError(ModelCreator.errorMsgGender);
+                } while (genderInput != 'm' && genderInput != 'f');
                 break;
             case 2:
-                //TODO: WRTIE QUERY TO CREATE FILTERED RESULT SETS FOR LOCATION
-                output("", 1);
+                System.out.print(ModelCreator.addressText);
+                String locationInput = ModelCreator.createString();
+                output(prefixesDefault +
+                        "SELECT * WHERE {" +
+                        "?person foaf:name ?name. " +
+                        "?person foaf:hasAddress ?a " +
+                        "FILTER regex(str(?a), '" + locationInput + "', 'i'). " +
+                        "}", 1);;
                 break;
             default:
                 LogHelper.logError("Value " + choice + " is not recognized as mode parameter");
