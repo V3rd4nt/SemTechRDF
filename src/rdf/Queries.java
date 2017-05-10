@@ -141,10 +141,10 @@ public class Queries {
                 //TODO: WRTIE QUERY TO CREATE FILTERED RESULT SETS FOR LOCATION
                 String locationInput = createString();
                 output(prefixesDefault +
-                        "SELECT * WHERE { " +
+                        "SELECT * WHERE {" +
                         "?person foaf:name ?name. " +
                         "?person foaf:hasAddress ?a " +
-                        "FILTER (?a = '" + locationInput + "'). " +
+                        "FILTER regex(str(?a), '" + locationInput + "', 'i'). " +
                         "}", 1);;
                 break;
             default:
