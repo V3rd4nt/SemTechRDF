@@ -18,12 +18,13 @@ public class Queries {
     private final String prefixesDefault =
             "PREFIX rdf: <" + RDF.getURI() + "> " +
             "PREFIX foaf: <" + FOAF.getURI()+ "> ";
-    private String nsExPersonsG, nsDelPersonsG, tempName;
+    private String nsExPersonsG, nsDelPersonsG, nsProperties;
 
     public Queries(Dataset dataset, String nsExPersonsG, String nsDelPersonsG, String nsProperties) {
         this.dataset = dataset;
         this.nsExPersonsG = nsExPersonsG;
         this.nsDelPersonsG = nsDelPersonsG;
+        this.nsProperties = nsProperties;
     }
 
     private void changeProperty(String name, String nameSpace, String property, String value) {
@@ -101,7 +102,7 @@ public class Queries {
     protected void deletePerson(String name) throws IOException {
         updateDB(prefixesDefault +
                 //  "CLEAR GRAPH <" + nsDelPersonsG + ">"
-                //" CLEAR GRAPH <" + nsExPersonsG + ">"
+                //  "CLEAR GRAPH <" + nsExPersonsG + ">"
                 "DELETE {" +
                 "GRAPH <" + nsExPersonsG + "> {?s ?p ?o}}" +
                 "INSERT {" +
@@ -156,7 +157,7 @@ public class Queries {
     protected void listGraph(String nsPersonG) {
         output(prefixesDefault +
                 "SELECT * WHERE { " +
-                "GRAPH <" + nsPersonG + "> { }. }", 1);
+                "GRAPH <" + nsPersonG + "> { ?s ?p ?o }. }", 1);
     }
 
     protected void filter(int choice) throws IOException {
