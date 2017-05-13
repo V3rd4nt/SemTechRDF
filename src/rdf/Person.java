@@ -3,7 +3,6 @@ import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.RDF;
-import java.util.UUID;
 
 /**
  * Created by Peter & Natalia.
@@ -13,12 +12,18 @@ public class Person {
     private Resource res;
     private Model model;
 
-    public Person(Model model, String nsPersons) {
-        String id = UUID.randomUUID().toString();
+    public Person(Model model, String nsPersons, String nsFoaf, String fullID) {
         this.model = model;
-        res = ResourceFactory.createResource(nsPersons + id);
+        res = ResourceFactory.createResource(nsPersons + fullID);
         model.add(res, RDF.type, FOAF.Person);
-        LogHelper.logInfo("Created person resource with UUID: " + id);
+        setID(fullID, nsFoaf);
+        LogHelper.logInfo("Created person resource with ID: " + fullID);
+    }
+
+    private void setID(String fullID, String nsFoaf) {
+        Property property = model.createProperty(nsFoaf + "hasID");
+        model.add(res, property, model.createLiteral(fullID));
+        LogHelper.logInfo("Set ID property to " + fullID);
     }
 
     protected void setName(String name) {
@@ -43,8 +48,8 @@ public class Person {
     }
 
     protected void setAddress(String address, String nsFoaf) {
-        Property prop = model.createProperty(nsFoaf + "hasAddress");
-        model.add(res, prop, model.createTypedLiteral(address));
+        Property property = model.createProperty(nsFoaf + "hasAddress");
+        model.add(res, property, model.createTypedLiteral(address));
         LogHelper.logInfo("Set address property to " + address);
     }
 }

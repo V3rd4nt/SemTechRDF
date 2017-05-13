@@ -18,14 +18,12 @@ public class Queries {
     private final String prefixesDefault =
             "PREFIX rdf: <" + RDF.getURI() + "> " +
             "PREFIX foaf: <" + FOAF.getURI()+ "> ";
-    private String perfixExPersonG, perfixDelPersonG, nsExPersonsG, nsDelPersonsG, tempName;
+    private String nsExPersonsG, nsDelPersonsG, tempName;
 
-    public Queries(Dataset dataset, String nsExPersonsG, String nsDelPersonsG) {
+    public Queries(Dataset dataset, String nsExPersonsG, String nsDelPersonsG, String nsProperties) {
         this.dataset = dataset;
         this.nsExPersonsG = nsExPersonsG;
         this.nsDelPersonsG = nsDelPersonsG;
-        perfixExPersonG = "PREFIX existing: <" + nsExPersonsG + "> ";
-        perfixDelPersonG = "PREFIX deleted: <" + nsDelPersonsG + "> ";
     }
 
     private void changeProperty(String name, String nameSpace, String property, String value) {
@@ -39,35 +37,30 @@ public class Queries {
     }
 
     protected void changeName(String name, String newName) {
-        tempName = newName;
         changeProperty(name, "foaf","name", newName);
         LogHelper.logInfo("Changed name property to " + newName);
         listPersons(newName, "foaf", "name");
     }
 
     protected void changeCompany(String name, String company) {
-        tempName = name;
         changeProperty(name, "foaf","worksFor", company);
         LogHelper.logInfo("Changed company property to " + company);
         listPersons(name, "foaf", "worksFor");
     }
 
     protected void changeGender(String name, String gender) {
-        tempName = name;
         changeProperty(name, "foaf","gender", gender);
         LogHelper.logInfo("Changed gender property to " + gender);
         listPersons(name, "foaf", "gender");
     }
 
     protected void changeBirthday(String name, String birthday) {
-        tempName = name;
         changeProperty(name, "foaf","birthday", birthday);
         LogHelper.logInfo("Changed birthday property to " + birthday);
         listPersons(name, "foaf", "birthday");
     }
 
     protected void changeAddress(String name, String address) {
-        tempName = name;
         changeProperty(name, "foaf","hasAddress", address);
         LogHelper.logInfo("Changed address property to " + address);
         listPersons(name, "foaf", "hasAddress");
@@ -83,16 +76,41 @@ public class Queries {
     }
 
     protected void addPerson(String name) {
-        //TODO: WRITE QUERY FOR ADDING A PERSON TO THE NAMED GRAPH FPR EXISITING PERSONS
-    }
-
-    protected void deletePerson(String name) {
-        //TODO: WRITE QUERY FOR DELETING A PERSON FROM THE EXISITNG PERSONS GRAPH AND ADDING
-        //TODO: IT TO THE DELETED PERSONS GRAPH
+        updateDB(prefixesDefault +
+                "INSERT { " +
+                "GRAPH <" + nsExPersonsG + "> { " +
+                "?s ?p ?o }}" +
+                "WHERE { " +
+                "?s ?p ?o. " +
+                "}");
     }
 
     protected void deleteAllPersons() {
-        //TODO: WRITE QUERY TO DELETE ALL EXISTING PERSONS FROM THE DATABASE
+        updateDB(prefixesDefault +
+                //  "CLEAR GRAPH <" + nsDelPersonsG + ">"
+                //  "CLEAR GRAPH <" + nsExPersonsG + ">"
+                "DELETE {" +
+                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o}}" +
+                "INSERT {" +
+                "GRAPH <" + nsDelPersonsG + "> {?s ?p ?o}} " +
+                "WHERE {" +
+                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o}} "
+        );
+    }
+
+    protected void deletePerson(String name) throws IOException {
+        updateDB(prefixesDefault +
+                //  "CLEAR GRAPH <" + nsDelPersonsG + ">"
+                //" CLEAR GRAPH <" + nsExPersonsG + ">"
+                "DELETE {" +
+                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o}}" +
+                "INSERT {" +
+                "GRAPH <" + nsDelPersonsG + "> {?s ?p ?o}}" +
+                "WHERE {" +
+                "GRAPH <" + nsExPersonsG + "> {" +
+                "FILTER regex(str(?o), '" + name + "', 'i')." +
+                "?s ?p ?o }}"  // i - for case insensitive
+        );
     }
 
     protected boolean personExists(String name) {

@@ -7,7 +7,6 @@ import java.io.IOException;
  */
 public class Main {
 
-    private ModelCreator mod = new ModelCreator();
     private final static String mainMenuText = "\n<-MAIN-MENU->\n" +
             "What do you like to do?\n" +
             "\t(1) add a new person\n" +
@@ -50,15 +49,11 @@ public class Main {
                     changePerson(mod);
                     break;
                 case '3':
-                    //TODO
                     //mod.deleteDummyPersons();
-                    //deletePerson(mod);
-                    LogHelper.logError("Needs to be implemented");
+                    deletePerson(mod);
                     break;
                 case '4':
-                    //TODO
-                    //mod.deleteAllPersons();
-                    LogHelper.logError("Needs to be implemented");
+                    mod.deleteAllPersons();
                     break;
                 case '5':
                     mod.listAllPersons();
@@ -93,7 +88,6 @@ public class Main {
                 switch (info = ModelCreator.createChar()) {
                     case '1':
                         System.out.println("<-CHANGE-NAME->");
-                        LogHelper.logInfo(name);
                         name = mod.changeName(name);
                         break;
                     case '2':
@@ -126,6 +120,11 @@ public class Main {
     public static void deletePerson(ModelCreator mod) throws IOException {
         System.out.println("<-DELETE-PERSON->");
         mod.deletePerson();
+    }
+
+    public static void deleteAllPerson(ModelCreator mod) throws IOException {
+        System.out.println("<-DELETE-ALL PERSONS->");
+        mod.deleteAllPersons();
     }
 
     public static void filterPersons(ModelCreator mod) throws IOException {
