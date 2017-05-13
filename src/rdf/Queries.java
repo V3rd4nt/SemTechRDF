@@ -80,10 +80,10 @@ public class Queries {
     protected void addFriend(String fullID, String fullID_friend) {
         updateDB(prefixesDefault + prefixProperties +
                 "INSERT { GRAPH <" + nsExPersonsG + "> { " +
-                ":" + fullID + nsProperties + ":hasFriend :" + fullID_friend + "} " +
+                ":" + fullID + " properties:hasFriend :" + fullID_friend + "} " +
                 "WHERE { " +
                 ":" + fullID + " a foaf:Person. " +
-                ":" + fullID_friend + " a foad:Person. " +
+                ":" + fullID_friend + " a foaf:Person. " +
                 " }");
      }
 
@@ -184,8 +184,7 @@ public class Queries {
     private void updateDB (String query) {
         dataset.begin(ReadWrite.WRITE);
         try {
-            UpdateRequest request = UpdateFactory.create(query);
-            UpdateAction.execute(request, dataset) ;
+            UpdateAction.execute(UpdateFactory.create(query), dataset) ;
             dataset.commit();
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());

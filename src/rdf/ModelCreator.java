@@ -22,7 +22,7 @@ public class ModelCreator {
     private Queries queries;
     private Person person;
 
-    protected final static String fullIDText = "Enter a social security number: ";
+    protected final static String fullIDText = "Enter an ID: ";
     protected final static String subIdText = "Enter the first 4 digits of your social security number: ";
     protected final static String nameText = "Enter a name: ";
     protected final static String genderText = "Enter a gender - (m)ale or (f)emale: ";
@@ -46,13 +46,10 @@ public class ModelCreator {
             directory.mkdirs();
         }
         dataset = TDBFactory.createDataset(path);
-        model = dataset.getDefaultModel();
         queries = new Queries(dataset, nsExPersonsG, nsDelPersonsG, nsProperties);
-        model.setNsPrefix("foaf", nsFoaf);
-        model.setNsPrefix("Person", nsPersons);
-        model.setNsPrefix("properties", nsProperties);
-        //model.setNsPrefix("existing", nsExPersonsG);
-        //model.setNsPrefix("deleted", nsDelPersonsG);
+        dataset.getDefaultModel().setNsPrefix("foaf", nsFoaf);
+        dataset.getDefaultModel().setNsPrefix("Person", nsPersons);
+        dataset.getDefaultModel().setNsPrefix("properties", nsProperties);
         queries.createNamedGraphs();
     }
 
@@ -60,6 +57,9 @@ public class ModelCreator {
         dataset.begin(ReadWrite.WRITE);
         try {
             dataset.commit();
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+            dataset.abort();
         } finally {
             dataset.end();
         }
@@ -101,7 +101,15 @@ public class ModelCreator {
     }
 
     public void createPerson(String fullID) {
-        person = new Person(model, nsPersons, nsFoaf, fullID);
+        person = new Person(dataset.getDefaultModel(), nsPersons, nsFoaf, fullID);
+    }
+
+    protected boolean personExists(String fullID) {
+        return queries.personExists(fullID);
+    }
+
+    private boolean personInGraph(String fullID) {
+        return queries.personInGraph(fullID);
     }
 
     public void createPerson() throws IOException {
@@ -170,25 +178,24 @@ public class ModelCreator {
 
     public void changeDummyPersons() throws IOException {
         System.out.println("<-CHANGE-GENDER->");
-        changeGender("Hanna", "female");
+        changeGender("2222160585", "female");
         System.out.println("<-CHANGE-COMPANY->");
-        changeCompany("Thomas", "SIEMENS");
+        changeCompany("3333271199", "SIEMENS");
         System.out.println("<-CHANGE-BIRTHDAY->");
-        changeBirthday("Sarah", "02.02.1991");
+        changeBirthday("1111010192", "02.02.1991");
         System.out.println("<-CHANGE-ADDRESS->");
-        changeAddress("Sarah", "Umfahrung 67, 1010 Wien");
+        changeAddress("1111010192", "Umfahrung 67, 1010 Wien");
     }
 
     public void deleteDummyPersons () throws IOException {
-        deletePerson("Sarah");
-        deletePerson("Thomas");
+        deletePerson("3333271199");
     }
 
-    private void deletePerson(String value) throws IOException {
-        System.out.println("<-LISTING-GRAPH Deleted Persons->");
-        queries.deletePerson(value);
+    private void deletePerson(String fullID) throws IOException {
+        System.out.println("<-LISTING-GRAPH---Deleted-Persons->");
+        queries.deletePerson(fullID);
         listGraphDeleted();
-        System.out.println("<-LISTING-GRAPH Remaining Existing Persons->");
+        System.out.println("<-LISTING-GRAPH---Remaining-Existing-Persons->");
         listGraphExisting();
     }
 
@@ -201,10 +208,10 @@ public class ModelCreator {
     }
 
     public void deleteAllPersons() {
-        System.out.println("<-LISTING-GRAPH All Deleted Persons->");
+        System.out.println("<-LISTING-GRAPH---All-Deleted-Persons->");
         queries.deleteAllPersons();
         listGraphDeleted();
-        System.out.println("<-LISTING-GRAPH No Existing Persons->");
+        System.out.println("<-LISTING-GRAPH---No-Existing-Persons->");
         listGraphExisting();
     }
 
@@ -330,7 +337,7 @@ public class ModelCreator {
         return br.readLine();
     }
 
-    public static String createIDSubstring() throws IOException {
+    private static String createIDSubstring() throws IOException {
         Boolean error;
         BufferedReader br;
         String line;
@@ -348,13 +355,5 @@ public class ModelCreator {
             if (error == true) LogHelper.logError(errorMsg);
         } while (error == true);
         return line;
-    }
-
-    public boolean personExists(String fullID) {
-        return queries.personExists(fullID);
-    }
-
-    public boolean personInGraph(String fullID) {
-        return queries.personInGraph(fullID);
     }
 }
