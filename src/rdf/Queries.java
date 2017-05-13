@@ -76,7 +76,7 @@ public class Queries {
         LogHelper.logInfo("Created graph <" + nsDelPersonsG + ">");
     }
 
-    protected void addPerson(String name) {
+    protected void addNewPerson(String name) {
         updateDB(prefixesDefault +
                 "INSERT { " +
                 "GRAPH <" + nsExPersonsG + "> { " +
@@ -91,7 +91,7 @@ public class Queries {
                 //  "CLEAR GRAPH <" + nsDelPersonsG + ">"
                 //  "CLEAR GRAPH <" + nsExPersonsG + ">"
                 "DELETE {" +
-                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o}}" +
+                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o}} " +
                 "INSERT {" +
                 "GRAPH <" + nsDelPersonsG + "> {?s ?p ?o}} " +
                 "WHERE {" +
@@ -103,14 +103,36 @@ public class Queries {
         updateDB(prefixesDefault +
                 //  "CLEAR GRAPH <" + nsDelPersonsG + ">"
                 //  "CLEAR GRAPH <" + nsExPersonsG + ">"
-                "DELETE {" +
-                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o}}" +
-                "INSERT {" +
-                "GRAPH <" + nsDelPersonsG + "> {?s ?p ?o}}" +
-                "WHERE {" +
+                "DELETE { " +
                 "GRAPH <" + nsExPersonsG + "> {" +
-                "FILTER regex(str(?o), '" + name + "', 'i')." +
-                "?s ?p ?o }}"  // i - for case insensitive
+                "?person a foaf:Person. " +
+                "?person foaf:hasID ?fullID. " +
+                "?person foaf:name ?name. " +
+                "?person foaf:gender ?gender. " +
+                "?person foaf:birthday ?birthday. " +
+                "?person foaf:worksFor ?company. " +
+                "?person foaf:hasAddress ?address. " +
+                "}}" +
+                "INSERT { " +
+                "GRAPH <" + nsDelPersonsG + "> { " +
+                "?person a foaf:Person. " +
+                "?person foaf:hasID ?fullID. " +
+                "?person foaf:name ?name. " +
+                "?person foaf:gender ?gender. " +
+                "?person foaf:birthday ?birthday. " +
+                "?person foaf:worksFor ?company. " +
+                "?person foaf:hasAddress ?address. " +
+                "}}" +
+                "WHERE { " +
+                "GRAPH <" + nsExPersonsG + "> { " +
+                "?person a foaf:Person. " +
+                "?person foaf:hasID ?fullID. " +
+                "?person foaf:name \"" + name + "\". " +
+                "?person foaf:gender ?gender. " +
+                "?person foaf:birthday ?birthday. " +
+                "?person foaf:worksFor ?company. " +
+                "?person foaf:hasAddress ?address. " +
+                "}}"
         );
     }
 
@@ -139,6 +161,7 @@ public class Queries {
         output(prefixesDefault +
                 "SELECT * WHERE { " +
                 "?person a foaf:Person. " +
+                "?person foaf:hasID ?fullID. " +
                 "?person foaf:name ?name. " +
                 "?person foaf:gender ?gender. " +
                 "?person foaf:birthday ?birthday. " +
@@ -169,6 +192,7 @@ public class Queries {
                     if(genderInput == 'm') {
                         output(prefixesDefault +
                                 "SELECT * WHERE { " +
+                                "?person foaf:hasID ?fullID. " +
                                 "?person foaf:name ?name. " +
                                 "?person foaf:gender ?gender " +
                                 "FILTER (?gender = 'male'). " +
@@ -176,6 +200,7 @@ public class Queries {
                     } else if (genderInput == 'f') {
                         output(prefixesDefault +
                                 "SELECT * WHERE { " +
+                                "?person foaf:hasID ?fullID. " +
                                 "?person foaf:name ?name. " +
                                 "?person foaf:gender ?gender " +
                                 "FILTER (?gender = 'female'). " +
@@ -189,6 +214,7 @@ public class Queries {
                 String locationInput = ModelCreator.createString();
                 output(prefixesDefault +
                         "SELECT * WHERE {" +
+                        "?person foaf:hasID ?fullID. " +
                         "?person foaf:name ?name. " +
                         "?person foaf:hasAddress ?address. " +
                         "?person foaf:hasAddress \"" + locationInput + "\"" +

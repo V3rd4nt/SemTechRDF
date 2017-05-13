@@ -119,7 +119,7 @@ public class ModelCreator {
     }
 
     private void addPersonToGraph(String name, String fullID) {
-        queries.addPerson(name);
+        queries.addNewPerson(name);
         listGraphExisting();
         LogHelper.logInfo("Added person resource with ID: " + fullID + " to named graph");
     }
