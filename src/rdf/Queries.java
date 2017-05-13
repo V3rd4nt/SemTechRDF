@@ -190,9 +190,15 @@ public class Queries {
                 output(prefixesDefault +
                         "SELECT * WHERE {" +
                         "?person foaf:name ?name. " +
+                        "?person foaf:hasAddress ?gender. " +
+                        "?person foaf:hasAddress \"" + locationInput + "\"" +
+                        "}", 1);;
+
+                        /*"SELECT * WHERE {" +
+                        "?person foaf:name ?name. " +
                         "?person foaf:hasAddress ?address " +
                         "FILTER regex(str(?address), '" + locationInput + "', 'i'). " +
-                        "}", 1);;
+                        "}" */ //Select does not search the exactly string input
                 break;
             default:
                 LogHelper.logError("Value " + choice + " is not recognized as mode parameter");
