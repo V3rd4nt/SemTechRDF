@@ -22,7 +22,8 @@ public class ModelCreator {
     private Queries queries;
     private Person person;
 
-    protected final static String idText = "Enter the first 4 digits of your social security number: ";
+    protected final static String fullIDText = "Enter a social security number: ";
+    protected final static String subIdText = "Enter the first 4 digits of your social security number: ";
     protected final static String nameText = "Enter a name: ";
     protected final static String genderText = "Enter a gender - (m)ale or (f)emale: ";
     protected final static String birthdayText = "Enter the date of birth in the format 'dd.MM.yyyy': ";
@@ -62,17 +63,25 @@ public class ModelCreator {
         } finally {
             dataset.end();
         }
-        dataset.begin(ReadWrite.READ);
-        try {
-            dataset.getDefaultModel().write(System.out, "TURTLE");
-        } finally {
-            dataset.end();
-        }
-        listAllPersons();
+        listAllPersons(1);
     }
 
-    public void listAllPersons() {
-        queries.listAllPersons();
+    public void listAllPersons(int mode) {
+        switch (mode) {
+            case 1:
+                queries.listAllPersons();
+                break;
+            case 2:
+                dataset.begin(ReadWrite.READ);
+                try {
+                    dataset.getDefaultModel().write(System.out, "TURTLE");
+                } finally {
+                    dataset.end();
+                }
+                break;
+            default:
+                LogHelper.logError("Value " + mode + " is not recognized as mode parameter");
+        }
     }
 
     public void listGraphExisting() {
@@ -98,7 +107,7 @@ public class ModelCreator {
     public void createPerson() throws IOException {
         System.out.print(nameText);
         String name = createString();
-        System.out.print(idText);
+        System.out.print(subIdText);
         String idPart1 = createIDSubstring();
         System.out.print(birthdayText);
         String birthday = createBirthdayString();
@@ -106,7 +115,7 @@ public class ModelCreator {
         String fullID = idPart1 +
                 idPart2.substring(0, idPart2.length()-4) +
                 idPart2.substring(idPart2.length()-2, idPart2.length());
-        if (!personExists(name)) {
+        if (!personExists(fullID)) {
             createPerson(fullID);
             setName(name);
             setBirthday(birthday);
@@ -114,16 +123,24 @@ public class ModelCreator {
             setAddress();
             setCompany();
             writeModelDB();
-            addPersonToGraph(name, fullID);
-        } else LogHelper.logError("The person " + name + " already exists!");
+            addPersonToGraph(fullID);
+        } else LogHelper.logError("The person with ID: " + fullID + " already exists!");
     }
 
-    private void addPersonToGraph(String name, String fullID) {
-        if (!personInGraph(name)) {
-            queries.addNewPerson(name);
+    private void addPersonToGraph(String fullID) {
+        if (!personInGraph(fullID)) {
+            queries.addNewPerson(fullID);
         }
         listGraphExisting();
         LogHelper.logInfo("Added person resource with ID: " + fullID + " to named graph");
+    }
+
+    public void addFriend(String fullID) throws IOException {
+        System.out.print(fullIDText);
+        String fullID_friend = createString();
+        if (personExists(fullID_friend)) {
+            queries.addFriend(fullID, fullID_friend);
+        } else LogHelper.logError("The person with ID: " + fullID_friend + " does not exist.");
     }
 
     public void createDummyPersons() throws IOException {
@@ -176,11 +193,11 @@ public class ModelCreator {
     }
 
     public void deletePerson() throws IOException {
-        System.out.print(nameText);
-        String name = createString();
-        if (personExists(name)) {
-            deletePerson(name);
-        } else System.out.println("The person " + name + " does not exist.");
+        System.out.print(fullIDText);
+        String fullID = createString();
+        if (personExists(fullID)) {
+            deletePerson(fullID);
+        } else LogHelper.logError("The person with ID: " + fullID + " does not exist.");
     }
 
     public void deleteAllPersons() {
@@ -191,19 +208,17 @@ public class ModelCreator {
         listGraphExisting();
     }
 
-    public void setName(String name) {
-        person.setName(name);
+    public void setName(String value) {
+        person.setName(value);
     }
 
-    private void changeName(String name, String value) {
-        queries.changeName(name, value);
+    private void changeName(String fullID, String value) {
+        queries.changeName(fullID, value);
     }
 
-    public String changeName(String name) throws IOException {
+    public void changeName(String fullID) throws IOException {
         System.out.print(nameText);
-        String value = createString();
-        changeName(name, value);
-        return value;
+        changeName(fullID, createString());
     }
 
     private void setGender(String value) {
@@ -215,26 +230,26 @@ public class ModelCreator {
         setGender(createGenderString());
     }
 
-    private void changeGender(String name, String value) {
-        queries.changeGender(name, value);
+    private void changeGender(String fullID, String value) {
+        queries.changeGender(fullID, value);
     }
 
-    public void changeGender(String name) throws IOException {
+    public void changeGender(String fullID) throws IOException {
         System.out.print(genderText);
-        changeGender(name, createGenderString());
+        changeGender(fullID, createGenderString());
     }
 
     private void setBirthday(String value) {
         person.setBirthday(value);
     }
 
-    private void changeBirthday(String name, String value) {
-        queries.changeBirthday(name, value);
+    private void changeBirthday(String fullID, String value) {
+        queries.changeBirthday(fullID, value);
     }
 
-    public void changeBirthday(String name) throws IOException {
+    public void changeBirthday(String fullID) throws IOException {
         System.out.print(birthdayText);
-        changeBirthday(name, createBirthdayString());
+        changeBirthday(fullID, createBirthdayString());
     }
 
     private void setAddress(String value) {
@@ -246,13 +261,13 @@ public class ModelCreator {
         setAddress(createString());
     }
 
-    private void changeAddress(String name, String value) {
-        queries.changeAddress(name, value);
+    private void changeAddress(String fullID, String value) {
+        queries.changeAddress(fullID, value);
     }
 
-    public void changeAddress(String name) throws IOException {
+    public void changeAddress(String fullID) throws IOException {
         System.out.print(addressText);
-        changeAddress(name, createString());
+        changeAddress(fullID, createString());
     }
 
     private void setCompany(String value) {
@@ -264,12 +279,12 @@ public class ModelCreator {
         setCompany(createString());
     }
 
-    private void changeCompany(String name, String value) { queries.changeCompany(name, value);
+    private void changeCompany(String fullID, String value) { queries.changeCompany(fullID, value);
     }
 
-    public void changeCompany(String name) throws IOException {
+    public void changeCompany(String fullID) throws IOException {
         System.out.print(companyText);
-        changeCompany(name, createString());
+        changeCompany(fullID, createString());
     }
 
     private static String createBirthdayString() {
@@ -335,11 +350,11 @@ public class ModelCreator {
         return line;
     }
 
-    public boolean personExists(String name) {
-        return queries.personExists(name);
+    public boolean personExists(String fullID) {
+        return queries.personExists(fullID);
     }
 
-    public boolean personInGraph(String name) {
-        return queries.personInGraph(name);
+    public boolean personInGraph(String fullID) {
+        return queries.personInGraph(fullID);
     }
 }
