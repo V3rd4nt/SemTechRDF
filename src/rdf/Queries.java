@@ -190,7 +190,7 @@ public class Queries {
                 output(prefixesDefault +
                         "SELECT * WHERE {" +
                         "?person foaf:name ?name. " +
-                        "?person foaf:hasAddress ?gender. " +
+                        "?person foaf:hasAddress ?address. " +
                         "?person foaf:hasAddress \"" + locationInput + "\"" +
                         "}", 1);;
 
