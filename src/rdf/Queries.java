@@ -78,12 +78,30 @@ public class Queries {
 
     protected void addNewPerson(String name) {
         updateDB(prefixesDefault +
-                "INSERT { " +
+                /*"INSERT { " +
                 "GRAPH <" + nsExPersonsG + "> { " +
                 "?s ?p ?o }}" +
                 "WHERE { " +
                 "?s ?p ?o. " +
-                "}");
+                "}"*/
+                "INSERT { GRAPH <" + nsExPersonsG + "> { " +
+                "?person a foaf:Person. " +
+                "?person foaf:hasID ?fullID. " +
+                "?person foaf:name ?name. " +
+                "?person foaf:gender ?gender. " +
+                "?person foaf:birthday ?birthday. " +
+                "?person foaf:worksFor ?company. " +
+                "?person foaf:hasAddress ?address. " +
+                "}}" +
+                "WHERE { " +
+                "?person a foaf:Person. " +
+                "?person foaf:hasID ?fullID. " +
+                "?person foaf:name \"" + name + "\". " +
+                "?person foaf:name ?name. " +
+                "?person foaf:gender ?gender. " +
+                "?person foaf:birthday ?birthday. " +
+                "?person foaf:worksFor ?company. " +
+                "?person foaf:hasAddress ?address. }");
     }
 
     protected void deleteAllPersons() {
@@ -128,6 +146,7 @@ public class Queries {
                 "?person a foaf:Person. " +
                 "?person foaf:hasID ?fullID. " +
                 "?person foaf:name \"" + name + "\". " +
+                "?person foaf:name ?name. " +
                 "?person foaf:gender ?gender. " +
                 "?person foaf:birthday ?birthday. " +
                 "?person foaf:worksFor ?company. " +
@@ -141,6 +160,14 @@ public class Queries {
                 "ASK { " +
                 "?person a foaf:Person. " +
                 "?person foaf:name \"" + name + "\". }", 2));
+    }
+
+    protected boolean personInGraph(String name) {
+        return (output(prefixesDefault +
+                "ASK { " +
+                "GRAPH <" + nsExPersonsG + "> { " +
+                "?person a foaf:Person. " +
+                "?person foaf:name \"" + name + "\". }}", 2));
     }
 
     private void updateDB (String query) {

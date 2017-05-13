@@ -119,7 +119,9 @@ public class ModelCreator {
     }
 
     private void addPersonToGraph(String name, String fullID) {
-        queries.addNewPerson(name);
+        if (!personInGraph(name)) {
+            queries.addNewPerson(name);
+        }
         listGraphExisting();
         LogHelper.logInfo("Added person resource with ID: " + fullID + " to named graph");
     }
@@ -337,4 +339,7 @@ public class ModelCreator {
         return queries.personExists(name);
     }
 
+    public boolean personInGraph(String name) {
+        return queries.personInGraph(name);
+    }
 }
