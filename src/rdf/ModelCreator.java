@@ -17,10 +17,8 @@ import java.util.Scanner;
  */
 public class ModelCreator {
 
-    private Model model;
     private Dataset dataset;
     private Queries queries;
-    private Person person;
 
     protected final static String fullIDText = "Enter an ID: ";
     protected final static String subIdText = "Enter the first 4 digits of your social security number: ";
@@ -37,7 +35,6 @@ public class ModelCreator {
     private String nsProperties = "http://semTechRDF.org/properties.rdf#";
     private String nsExPersonsG = "http://semTechRDF.org/ex-persons.rdf#";
     private String nsDelPersonsG = "http://semTechRDF.org/del-persons.rdf#";
-    private String nsFoaf = FOAF.getURI();
 
     public ModelCreator() {
         String path = System.getProperty("user.home") + "/Desktop/SemtechRDF-TDB";
@@ -46,49 +43,26 @@ public class ModelCreator {
             directory.mkdirs();
         }
         dataset = TDBFactory.createDataset(path);
-        queries = new Queries(dataset, nsExPersonsG, nsDelPersonsG, nsProperties);
-        dataset.getDefaultModel().setNsPrefix("foaf", nsFoaf);
-        dataset.getDefaultModel().setNsPrefix("Person", nsPersons);
-        dataset.getDefaultModel().setNsPrefix("properties", nsProperties);
+        queries = new Queries(dataset, nsExPersonsG, nsDelPersonsG, nsProperties, nsPersons);
         queries.createNamedGraphs();
     }
 
-    protected void writeModelDB() {
-        dataset.begin(ReadWrite.WRITE);
+    public void listAllPersons() {
+        dataset.begin(ReadWrite.READ);
         try {
-            dataset.commit();
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
-            dataset.abort();
+            dataset.getDefaultModel().write(System.out, "TURTLE");
         } finally {
             dataset.end();
-        }
-        listAllPersons(1);
-    }
-
-    public void listAllPersons(int mode) {
-        switch (mode) {
-            case 1:
-                queries.listAllPersons();
-                break;
-            case 2:
-                dataset.begin(ReadWrite.READ);
-                try {
-                    dataset.getDefaultModel().write(System.out, "TURTLE");
-                } finally {
-                    dataset.end();
-                }
-                break;
-            default:
-                LogHelper.logError("Value " + mode + " is not recognized as mode parameter");
         }
     }
 
     public void listGraphExisting() {
+        System.out.println("<-GRAPH---EXISTING-PERSONS->");
         queries.listGraph(nsExPersonsG);
     }
 
     public void listGraphDeleted() {
+        System.out.println("<-GRAPH---DELETED-PERSONS->");
         queries.listGraph(nsDelPersonsG);
     }
 
@@ -100,16 +74,22 @@ public class ModelCreator {
         queries.filter(2);
     }
 
-    public void createPerson(String fullID) {
-        person = new Person(dataset.getDefaultModel(), nsPersons, nsFoaf, fullID);
+    public boolean createPerson(String fullID) {
+        if (!personExists(fullID)) {
+            queries.createPerson(fullID);
+            return true;
+        } else {
+            LogHelper.logError("The person with ID: " + fullID + " already exists!");
+            return false;
+        }
     }
 
     protected boolean personExists(String fullID) {
         return queries.personExists(fullID);
     }
 
-    private boolean personInGraph(String fullID) {
-        return queries.personInGraph(fullID);
+    private boolean personExistsInGraph(String fullID) {
+        return queries.personExistsG(fullID);
     }
 
     public void createPerson() throws IOException {
@@ -123,80 +103,55 @@ public class ModelCreator {
         String fullID = idPart1 +
                 idPart2.substring(0, idPart2.length()-4) +
                 idPart2.substring(idPart2.length()-2, idPart2.length());
-        if (!personExists(fullID)) {
-            createPerson(fullID);
-            setName(name);
-            setBirthday(birthday);
-            setGender();
-            setAddress();
-            setCompany();
-            writeModelDB();
+
+        if (createPerson(fullID)) {
+            setName(fullID, name);
+            setBirthday(fullID, birthday);
+            setGender(fullID);
+            setAddress(fullID);
+            setCompany(fullID);
             addPersonToGraph(fullID);
-        } else LogHelper.logError("The person with ID: " + fullID + " already exists!");
+        }
     }
 
     private void addPersonToGraph(String fullID) {
-        if (!personInGraph(fullID)) {
-            queries.addNewPerson(fullID);
+        if (!personExistsInGraph(fullID)) {
+            queries.addNewPersonG(fullID);
         }
-        listGraphExisting();
         LogHelper.logInfo("Added person resource with ID: " + fullID + " to named graph");
     }
 
-    public void addFriend(String fullID) throws IOException {
+    private void modifyFriend(String fullID, int mode) throws IOException {
         System.out.print(fullIDText);
         String fullID_friend = createString();
         if (personExists(fullID_friend)) {
-            queries.addFriend(fullID, fullID_friend);
+            switch (mode) {
+                case 1:
+                    // add a friend
+                    queries.setFriend(fullID, fullID_friend);
+                    break;
+                case 2:
+                    // delete a friend
+                    queries.deleteFriend(fullID, fullID_friend);
+                    break;
+                default:
+                    LogHelper.logError("Value " + mode + " is not recognized as mode parameter");
+            }
         } else LogHelper.logError("The person with ID: " + fullID_friend + " does not exist.");
     }
 
-    public void createDummyPersons() throws IOException {
-
-        createPerson("1111010192");
-        setName("Johannes");
-        setGender("male");
-        setBirthday("01.01.1992");
-        setAddress("Hauptstraße 1, 4020 Linz");
-        setCompany("Johannes Kepler University");
-        writeModelDB();
-        createPerson("2222160585");
-        setName("Markus");
-        setGender("male");
-        setBirthday("16.05.1985");
-        setAddress("Seitenstraße 1, 4030 Linz");
-        setCompany("FH Hagenberg");
-        writeModelDB();
-        createPerson("3333271199");
-        setName("Sandra");
-        setGender("female");
-        setBirthday("27.11.1999");
-        setAddress("Gasse 14, 4010 Linz");
-        setCompany("Uni Wien");
-        writeModelDB();
+    public void addFriend(String fullID) throws IOException {
+        modifyFriend(fullID, 1);
     }
 
-    public void changeDummyPersons() throws IOException {
-        System.out.println("<-CHANGE-GENDER->");
-        changeGender("2222160585", "female");
-        System.out.println("<-CHANGE-COMPANY->");
-        changeCompany("3333271199", "SIEMENS");
-        System.out.println("<-CHANGE-BIRTHDAY->");
-        changeBirthday("1111010192", "02.02.1991");
-        System.out.println("<-CHANGE-ADDRESS->");
-        changeAddress("1111010192", "Umfahrung 67, 1010 Wien");
-    }
-
-    public void deleteDummyPersons () throws IOException {
-        deletePerson("3333271199");
+    public void deleteFriend(String fullID) throws IOException {
+        modifyFriend(fullID, 2);
     }
 
     private void deletePerson(String fullID) throws IOException {
-        System.out.println("<-LISTING-GRAPH---Deleted-Persons->");
-        queries.deletePerson(fullID);
-        listGraphDeleted();
-        System.out.println("<-LISTING-GRAPH---Remaining-Existing-Persons->");
+        queries.deletePersonG(fullID);
         listGraphExisting();
+        listGraphDeleted();
     }
 
     public void deletePerson() throws IOException {
@@ -208,15 +163,13 @@ public class ModelCreator {
     }
 
     public void deleteAllPersons() {
-        System.out.println("<-LISTING-GRAPH---All-Deleted-Persons->");
-        queries.deleteAllPersons();
-        listGraphDeleted();
-        System.out.println("<-LISTING-GRAPH---No-Existing-Persons->");
+        queries.deleteAllPersonsG();
         listGraphExisting();
+        listGraphDeleted();
     }
 
-    public void setName(String value) {
-        person.setName(value);
+    public void setName(String fullID, String value) {
+        queries.setName(fullID, value);
     }
 
     private void changeName(String fullID, String value) {
@@ -228,13 +181,13 @@ public class ModelCreator {
         changeName(fullID, createString());
     }
 
-    private void setGender(String value) {
-        person.setGender(value);
+    private void setGender(String fullID, String value) {
+        queries.setGender(fullID, value);
     }
 
-    public void setGender() throws IOException {
+    public void setGender(String fullID) throws IOException {
         System.out.print(genderText);
-        setGender(createGenderString());
+        setGender(fullID, createGenderString());
     }
 
     private void changeGender(String fullID, String value) {
@@ -246,8 +199,8 @@ public class ModelCreator {
         changeGender(fullID, createGenderString());
     }
 
-    private void setBirthday(String value) {
-        person.setBirthday(value);
+    private void setBirthday(String fullID, String value) {
+        queries.setBirthday(fullID, value);
     }
 
     private void changeBirthday(String fullID, String value) {
@@ -259,13 +212,13 @@ public class ModelCreator {
         changeBirthday(fullID, createBirthdayString());
     }
 
-    private void setAddress(String value) {
-        person.setAddress(value, nsFoaf);
+    private void setAddress(String fullID, String value) {
+        queries.setAddress(fullID, value);
     }
 
-    public void setAddress() throws IOException {
+    public void setAddress(String fullID) throws IOException {
         System.out.print(addressText);
-        setAddress(createString());
+        setAddress(fullID, createString());
     }
 
     private void changeAddress(String fullID, String value) {
@@ -277,13 +230,13 @@ public class ModelCreator {
         changeAddress(fullID, createString());
     }
 
-    private void setCompany(String value) {
-        person.setCompany(value, nsFoaf);
+    private void setCompany(String fullID, String value) {
+        queries.setCompany(fullID, value);
     }
 
-    public void setCompany() throws IOException {
+    public void setCompany(String fullID) throws IOException {
         System.out.print(companyText);
-        setCompany(createString());
+        setCompany(fullID, createString());
     }
 
     private void changeCompany(String fullID, String value) { queries.changeCompany(fullID, value);
@@ -356,4 +309,45 @@ public class ModelCreator {
         } while (error == true);
         return line;
     }
+
+        /*
+    public void createDummyPersons() throws IOException {
+
+        Person p1 = createPerson("1111010192");
+        setName(p1, "Johannes");
+        setGender(p1, "male");
+        setBirthday(p1, "01.01.1992");
+        setAddress(p1, "Hauptstraße 1, 4020 Linz");
+        setCompany(p1, "Johannes Kepler University");
+        writeModelDB();
+        Person p2 = createPerson("2222160585");
+        setName(p2, "Markus");
+        setGender(p2, "male");
+        setBirthday(p2, "16.05.1985");
+        setAddress(p2, "Seitenstraße 1, 4030 Linz");
+        setCompany(p2, "FH Hagenberg");
+        writeModelDB();
+        Person p3 = createPerson("3333271199");
+        setName(p3, "Sandra");
+        setGender(p3, "female");
+        setBirthday(p3, "27.11.1999");
+        setAddress(p3, "Gasse 14, 4010 Linz");
+        setCompany(p3, "Uni Wien");
+        writeModelDB();
+    }
+
+    public void changeDummyPersons() throws IOException {
+        System.out.println("<-CHANGE-GENDER->");
+        changeGender("2222160585", "female");
+        System.out.println("<-CHANGE-COMPANY->");
+        changeCompany("3333271199", "SIEMENS");
+        System.out.println("<-CHANGE-BIRTHDAY->");
+        changeBirthday("1111010192", "02.02.1991");
+        System.out.println("<-CHANGE-ADDRESS->");
+        changeAddress("1111010192", "Umfahrung 67, 1010 Wien");
+    }
+
+    public void deleteDummyPersons () throws IOException {
+        deletePerson("3333271199");
+    }*/
 }

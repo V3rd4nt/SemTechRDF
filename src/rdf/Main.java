@@ -9,12 +9,16 @@ public class Main {
 
     private final static String mainMenuText = "\n<-MAIN-MENU->\n" +
             "What do you like to do?\n" +
-            "\t(1) create a new person and add it to the existing persons graph\n" +
-            "\t(2) change person information\n" +
-            "\t(3) delete a person from the exisitng person graph (move to deleted person graph)\n" +
-            "\t(4) delete all persons (move all persons to the deleted person graph)\n" +
-            "\t(5) list all persons (graph independent, ResultSet)\n" +
-            "\t(6) list all persons (graph independent, Turtle Notation)\n" +
+            "\t(1) create a new person\n" +
+            "\t(2) change person's information\n" +
+            "\t(3) delete a person from the exisitng person graph\n" +
+                    "\t\t\t-- move all triplets of a person to the deleted person graph\n" +
+            "\t(4) delete all persons\n" +
+                    "\t\t\t-- move all person triplets to the deleted person graph\n" +
+            "\t(5) list all persons\n" +
+                    "\t\t\t-- graph independent, Output in TURTLE notation\n" +
+            "\t(6) list all triplets in all graphs\n" +
+                    "\t\t\t-- Output in TURTLE notation\n" +
             "\t(7) filter the persons listed in TDB by spedified criteria\n" +
             "\t(0) exit program\n" +
             "\t: ";
@@ -26,6 +30,7 @@ public class Main {
             "\t(4) address\n" +
             "\t(5) company\n" +
             "\t(6) add a friend\n" +
+            "\t(7) delete a friend\n" +
             "\t(0) back\n" +
             "\t: ";
     private final static String filterMenuText = "\n<-FILTER-PERSON->\n" +
@@ -43,25 +48,23 @@ public class Main {
         do {
             switch (info = ModelCreator.createChar()) {
                 case '1':
-                    //mod.createDummyPersons();
                     createPerson(mod);
                     break;
                 case '2':
-                    //mod.changeDummyPersons();
                     changePerson(mod);
                     break;
                 case '3':
-                    //mod.deleteDummyPersons();
                     deletePerson(mod);
                     break;
                 case '4':
-                    mod.deleteAllPersons();
+                    deleteAllPersons(mod);
                     break;
                 case '5':
-                    mod.listAllPersons(1);
+                    mod.listAllPersons();
                     break;
                 case '6':
-                    mod.listAllPersons(2);
+                    mod.listGraphExisting();
+                    mod.listGraphDeleted();
                     break;
                 case '7':
                     filterPersons(mod);
@@ -115,6 +118,10 @@ public class Main {
                         System.out.println("<-ADD-A-FRIEND->");
                         mod.addFriend(fullID);
                         break;
+                    case '7':
+                        System.out.println("<-DELETE-A-FRIEND->");
+                        mod.deleteFriend(fullID);
+                        break;
                     case '0':
                         break;
                     default:
@@ -131,7 +138,7 @@ public class Main {
         mod.deletePerson();
     }
 
-    public static void deleteAllPerson(ModelCreator mod) throws IOException {
+    public static void deleteAllPersons(ModelCreator mod) throws IOException {
         System.out.println("<-DELETE-ALL PERSONS->");
         mod.deleteAllPersons();
     }

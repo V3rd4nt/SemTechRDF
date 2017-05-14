@@ -18,16 +18,92 @@ public class Queries {
     private final String prefixesDefault =
             "PREFIX rdf: <" + RDF.getURI() + "> " +
             "PREFIX foaf: <" + FOAF.getURI()+ "> ";
-    private String nsExPersonsG, nsDelPersonsG, nsProperties, prefixProperties;
+    private String nsExPersonsG, nsDelPersonsG, prefixProperties, prefixPersons;
 
-    public Queries(Dataset dataset, String nsExPersonsG, String nsDelPersonsG, String nsProperties) {
+    public Queries(Dataset dataset, String nsExPersonsG, String nsDelPersonsG, String nsProperties, String nsPersons) {
         this.dataset = dataset;
         this.nsExPersonsG = nsExPersonsG;
         this.nsDelPersonsG = nsDelPersonsG;
-        this.nsProperties = nsProperties;
         prefixProperties = "PREFIX properties: <" + nsProperties + "> ";
+        prefixPersons = "PREFIX person: <" + nsPersons + "> ";
     }
 
+    private void updateDB (String query) {
+        dataset.begin(ReadWrite.WRITE);
+        try {
+            UpdateAction.execute(UpdateFactory.create(query), dataset) ;
+            dataset.commit();
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+            dataset.abort();
+        } finally {
+            dataset.end();
+        }
+    }
+
+    protected void createPerson(String fullID) {
+        updateDB(prefixesDefault + prefixPersons +
+                "INSERT DATA { " +
+                "person:" + fullID + " a foaf:Person. " +
+                "person:" + fullID + " foaf:hasID '" + fullID + "'. "+
+                "}");
+        LogHelper.logInfo("Created person resource with ID: " + fullID);
+    }
+
+    // SET PERSON DATA
+    private void addProperty(String fullID, String nameSpace, String property, String value) {
+        updateDB(prefixesDefault + prefixProperties + prefixPersons +
+                "INSERT DATA { person:" + fullID + " " + nameSpace + ":" + property +" '" + value + "'. }");
+    }
+
+    protected void setName(String fullID, String name) {
+        addProperty(fullID, "foaf","name", name);
+        LogHelper.logInfo("Set name property to " + name);
+    }
+
+    protected void setCompany(String fullID, String company) {
+        addProperty(fullID, "foaf","worksFor", company);
+        LogHelper.logInfo("Set company property to " + company);
+    }
+
+    protected void setGender(String fullID, String gender) {
+        addProperty(fullID, "foaf","gender", gender);
+        LogHelper.logInfo("Set gender property to " + gender);
+    }
+
+    protected void setBirthday(String fullID, String birthday) {
+        addProperty(fullID, "foaf","birthday", birthday);
+        LogHelper.logInfo("Set birthday property to " + birthday);
+    }
+
+    protected void setAddress(String fullID, String address) {
+        addProperty(fullID, "foaf","hasAddress", address);
+        LogHelper.logInfo("Set address property to " + address);
+    }
+
+    private void addRelation(String fullID, String nameSpace, String property, String fullID_) {
+        updateDB(prefixesDefault + prefixProperties + prefixPersons +
+                "INSERT DATA { " + "" +
+                "person:" + fullID + " " + nameSpace + ":" + property + " person:" + fullID_ + ". " +
+                "}");
+        updateDB(prefixesDefault + prefixProperties + prefixPersons +
+                "INSERT { " +
+                "GRAPH <" + nsExPersonsG + "> { " +
+                "?person " + nameSpace + ":" + property + " ?value. }" +
+                "}" +
+                "WHERE { " +
+                "?person a foaf:Person. " +
+                "?person foaf:hasID '" + fullID + "'. " +
+                "?person " + nameSpace + ":" + property + " ?value. " +
+                "}");
+    }
+
+    protected void setFriend(String fullID, String fullID_) {
+        addRelation(fullID, "properties","hasFriend", fullID_);
+        LogHelper.logInfo("Set friend to " + fullID_);
+    }
+
+    // CHANGE PERSON DATA
     private void changeProperty(String fullID, String nameSpace, String property, String value) {
         updateDB(prefixesDefault + prefixProperties +
                 "DELETE { ?person " + nameSpace + ":" + property +" ?value } " +
@@ -35,7 +111,8 @@ public class Queries {
                 "WHERE { " +
                 "?person a foaf:Person. " +
                 "?person foaf:hasID \"" + fullID + "\". " +
-                "?person " + nameSpace + ":" + property + " ?value. }");
+                "?person " + nameSpace + ":" + property + " ?value. " +
+                "}");
     }
 
     protected void changeName(String fullID, String name) {
@@ -77,17 +154,7 @@ public class Queries {
         LogHelper.logInfo("Created graph <" + nsDelPersonsG + ">");
     }
 
-    protected void addFriend(String fullID, String fullID_friend) {
-        updateDB(prefixesDefault + prefixProperties +
-                "INSERT { GRAPH <" + nsExPersonsG + "> { " +
-                ":" + fullID + " properties:hasFriend :" + fullID_friend + "} " +
-                "WHERE { " +
-                ":" + fullID + " a foaf:Person. " +
-                ":" + fullID_friend + " a foaf:Person. " +
-                " }");
-     }
-
-    protected void addNewPerson(String fullID) {
+    protected void addNewPersonG(String fullID) {
         updateDB(prefixesDefault +
                 /*"INSERT { " +
                 "GRAPH <" + nsExPersonsG + "> { " +
@@ -115,7 +182,7 @@ public class Queries {
                 "?person foaf:hasAddress ?address. }");
     }
 
-    protected void deleteAllPersons() {
+    protected void deleteAllPersonsG() {
         updateDB(prefixesDefault +
                 //  "CLEAR GRAPH <" + nsDelPersonsG + ">"
                 //  "CLEAR GRAPH <" + nsExPersonsG + ">"
@@ -128,7 +195,7 @@ public class Queries {
         );
     }
 
-    protected void deletePerson(String fullID) throws IOException {
+    protected void deletePersonG(String fullID) throws IOException {
         updateDB(prefixesDefault +
                 //  "CLEAR GRAPH <" + nsDelPersonsG + ">"
                 //  "CLEAR GRAPH <" + nsExPersonsG + ">"
@@ -166,6 +233,10 @@ public class Queries {
         );
     }
 
+    protected void deleteFriend(String fullID, String fullID_) {
+        //TODO: DELETE A FRIEND FROM DEFAULT GRAPH AND FROM ANY GRAPH THE TRIPLET IS CONTAINED IN
+    }
+
     protected boolean personExists(String fullID) {
         return (output(prefixesDefault +
                 "ASK { " +
@@ -173,37 +244,12 @@ public class Queries {
                 "?person foaf:hasID \"" + fullID + "\". }", 2));
     }
 
-    protected boolean personInGraph(String fullID) {
+    protected boolean personExistsG(String fullID) {
         return (output(prefixesDefault +
                 "ASK { " +
                 "GRAPH <" + nsExPersonsG + "> { " +
                 "?person a foaf:Person. " +
                 "?person foaf:hasID \"" + fullID + "\". }}", 2));
-    }
-
-    private void updateDB (String query) {
-        dataset.begin(ReadWrite.WRITE);
-        try {
-            UpdateAction.execute(UpdateFactory.create(query), dataset) ;
-            dataset.commit();
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
-            dataset.abort();
-        } finally {
-            dataset.end();
-        }
-    }
-
-    protected void listAllPersons() {
-        output(prefixesDefault +
-                "SELECT * WHERE { " +
-                "?person a foaf:Person. " +
-                "?person foaf:hasID ?fullID. " +
-                "?person foaf:name ?name. " +
-                "?person foaf:gender ?gender. " +
-                "?person foaf:birthday ?birthday. " +
-                "?person foaf:worksFor ?company. " +
-                "?person foaf:hasAddress ?address. }", 1);
     }
 
     protected void listPersons(String fullID, String nameSpace, String property) {
