@@ -29,7 +29,7 @@ public class ModelCreator {
     protected final static String companyText = "Enter a Workplace: ";
     protected final static String errorMsg = "Sorry, that's not a valid input. Please try again: ";
     protected final static String errorMsgGender = "Sorry, that's not valid a valid input.\n" +
-            "A gender must be (m)ale or (f)emale. Please try again: ";
+            "\t\t\t\t\t\t\t\t\t  A gender must be (m)ale or (f)emale. Please try again: ";
 
     private String nsPersons = "http://semTechRDF.org/persons/";
     private String nsProperties = "http://semTechRDF.org/properties.rdf#";
@@ -50,6 +50,7 @@ public class ModelCreator {
     public void listAllPersons() {
         dataset.begin(ReadWrite.READ);
         try {
+            System.out.println("<-LIST-OF-ALL-PERSONS---NAMED-GRAPH-INDEPENDENT->");
             dataset.getDefaultModel().write(System.out, "TURTLE");
         } finally {
             dataset.end();
@@ -57,12 +58,12 @@ public class ModelCreator {
     }
 
     public void listGraphExisting() {
-        System.out.println("<-GRAPH---EXISTING-PERSONS->");
+        System.out.println("<-NAMED-GRAPH---EXISTING-PERSONS->");
         queries.listGraph(nsExPersonsG);
     }
 
     public void listGraphDeleted() {
-        System.out.println("<-GRAPH---DELETED-PERSONS->");
+        System.out.println("<-NAMED-GRAPH---DELETED-PERSONS->");
         queries.listGraph(nsDelPersonsG);
     }
 
@@ -88,7 +89,7 @@ public class ModelCreator {
         return queries.personExists(fullID);
     }
 
-    private boolean personExistsInGraph(String fullID) {
+    protected boolean personExistsInGraph(String fullID) {
         return queries.personExistsG(fullID);
     }
 
@@ -118,26 +119,36 @@ public class ModelCreator {
         if (!personExistsInGraph(fullID)) {
             queries.addNewPersonG(fullID);
         }
-        LogHelper.logInfo("Added person resource with ID: " + fullID + " to named graph");
+        LogHelper.logInfo("Added person resource with ID: " + fullID + " to\n" +
+                "\t\t\t\t\t\t\t\t\t  the 'existing persons' named graph");
     }
 
     private void modifyFriend(String fullID, int mode) throws IOException {
         System.out.print(fullIDText);
         String fullID_friend = createString();
-        if (personExists(fullID_friend)) {
+        if (personExists(fullID_friend) && personExistsInGraph(fullID_friend) && !fullID.equals(fullID_friend)) {
             switch (mode) {
                 case 1:
                     // add a friend
-                    queries.setFriend(fullID, fullID_friend);
+                    queries.addFriend(fullID, fullID_friend);
                     break;
                 case 2:
                     // delete a friend
                     queries.deleteFriend(fullID, fullID_friend);
                     break;
-                default:
-                    LogHelper.logError("Value " + mode + " is not recognized as mode parameter");
+                default: Queries.displayChoiceError(mode);
             }
-        } else LogHelper.logError("The person with ID: " + fullID_friend + " does not exist.");
+        }
+        else {
+            if (fullID.equals(fullID_friend)) {
+                LogHelper.logError("It's not allowed to add onself as friend!");
+            } else LogHelper.logError("The person with ID: " + fullID_friend + " does not exist\n" +
+                    "\t\t\t\t\t\t\t\t\t  or has been deleted from the 'existing persons' named graph.");
+        }
+    }
+
+    private void addFriend(String fullID, String fullID_friend) {
+        queries.addFriend(fullID, fullID_friend);
     }
 
     public void addFriend(String fullID) throws IOException {
@@ -310,44 +321,29 @@ public class ModelCreator {
         return line;
     }
 
-        /*
     public void createDummyPersons() throws IOException {
 
-        Person p1 = createPerson("1111010192");
-        setName(p1, "Johannes");
-        setGender(p1, "male");
-        setBirthday(p1, "01.01.1992");
-        setAddress(p1, "Hauptstraße 1, 4020 Linz");
-        setCompany(p1, "Johannes Kepler University");
-        writeModelDB();
-        Person p2 = createPerson("2222160585");
-        setName(p2, "Markus");
-        setGender(p2, "male");
-        setBirthday(p2, "16.05.1985");
-        setAddress(p2, "Seitenstraße 1, 4030 Linz");
-        setCompany(p2, "FH Hagenberg");
-        writeModelDB();
-        Person p3 = createPerson("3333271199");
-        setName(p3, "Sandra");
-        setGender(p3, "female");
-        setBirthday(p3, "27.11.1999");
-        setAddress(p3, "Gasse 14, 4010 Linz");
-        setCompany(p3, "Uni Wien");
-        writeModelDB();
+        createPerson("1111010101");
+        setName("1111010101", "Johannes");
+        setGender("1111010101", "male");
+        setBirthday("1111010101", "01.01.1992");
+        setAddress("1111010101", "Hauptstraße 1, 4020 Linz");
+        setCompany("1111010101", "Johannes Kepler University");
+        addFriend("1111010101", "2222020202");
+        createPerson("2222020202");
+        setName("2222020202", "Markus");
+        setGender("2222020202", "male");
+        setBirthday("2222020202", "16.05.1985");
+        setAddress("2222020202", "Seitenstraße 1, 4030 Linz");
+        setCompany("2222020202", "FH Hagenberg");
+        addFriend("2222020202", "3333030303");
+        addFriend("2222020202", "1111010101");
+        createPerson("3333030303");
+        setName("3333030303", "Sandra");
+        setGender("3333030303", "female");
+        setBirthday("3333030303", "27.11.1999");
+        setAddress("3333030303", "Gasse 14, 4010 Linz");
+        setCompany("3333030303", "Uni Wien");
+        addFriend("3333030303", "2222020202");
     }
-
-    public void changeDummyPersons() throws IOException {
-        System.out.println("<-CHANGE-GENDER->");
-        changeGender("2222160585", "female");
-        System.out.println("<-CHANGE-COMPANY->");
-        changeCompany("3333271199", "SIEMENS");
-        System.out.println("<-CHANGE-BIRTHDAY->");
-        changeBirthday("1111010192", "02.02.1991");
-        System.out.println("<-CHANGE-ADDRESS->");
-        changeAddress("1111010192", "Umfahrung 67, 1010 Wien");
-    }
-
-    public void deleteDummyPersons () throws IOException {
-        deletePerson("3333271199");
-    }*/
 }

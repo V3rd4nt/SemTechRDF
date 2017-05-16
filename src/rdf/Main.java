@@ -12,17 +12,18 @@ public class Main {
             "\t(1) create a new person\n" +
             "\t(2) change person's information\n" +
             "\t(3) delete a person from the exisitng person graph\n" +
-                    "\t\t\t-- move all triplets of a person to the deleted person graph\n" +
+                    "\t\t\t--> move all triplets of a person to the deleted person graph\n" +
             "\t(4) delete all persons\n" +
-                    "\t\t\t-- move all person triplets to the deleted person graph\n" +
+                    "\t\t\t--> move all person triplets to the deleted person graph\n" +
             "\t(5) list all persons\n" +
-                    "\t\t\t-- graph independent, Output in TURTLE notation\n" +
+                    "\t\t\t--> graph independent, Output in TURTLE notation\n" +
             "\t(6) list all triplets in all graphs\n" +
-                    "\t\t\t-- Output in TURTLE notation\n" +
+                    "\t\t\t--> Output in TURTLE notation\n" +
             "\t(7) filter the persons listed in TDB by spedified criteria\n" +
+            		"\t\t\t--> graph independent filtering\n" +
             "\t(0) exit program\n" +
             "\t: ";
-    private final static String changeMenuText = "\n<-CHANGE-INFORMATION->\n" +
+    private final static String changeMenuText = "\n<-CHANGE-PERSON-INFO->\n" +
             "What information do you want to change?\n" +
             "\t(1) name\n" +
             "\t(2) gender\n" +
@@ -40,14 +41,21 @@ public class Main {
             "\t(0) cancel\n" +
             "\t:";
 
+    private final static String deleteMenuText = "\n<-DELETE-ALL-PERSONS->\n" +
+            "Are you sure to delete all persons?:\n" +
+            "\t(1) yes\n" +
+            "\t(2) no\n" +
+            "\t:";
+
     public static void main (String[] args) throws IOException {
         System.out.println("<-RDF-PERSON-DATABASE->");
         ModelCreator mod = new ModelCreator();
         System.out.print(mainMenuText);
-        char info;
+        char input;
         do {
-            switch (info = ModelCreator.createChar()) {
+            switch (input = ModelCreator.createChar()) {
                 case '1':
+                    mod.createDummyPersons();
                     createPerson(mod);
                     break;
                 case '2':
@@ -77,23 +85,23 @@ public class Main {
             }
             System.out.print(mainMenuText);
 
-        } while (info != '0');
+        } while (input != '0');
     }
 
     public static void createPerson(ModelCreator mod) throws IOException {
-        System.out.println("<-CREATE-PERSON->");
+        System.out.println("<-CREATE-A-PERSON->");
         mod.createPerson();
     }
 
     public static void changePerson(ModelCreator mod) throws IOException {
-        char info;
-        System.out.println("\n<-CHANGE-MENU->");
+        System.out.println("\n<-CHANGE-PERSON-INFO->");
         System.out.print("Enter the name of the person you want to change information for: ");
         String fullID = ModelCreator.createString();
-        if (mod.personExists(fullID)) {
+        char input;
+        if (mod.personExists(fullID) && mod.personExistsInGraph(fullID)) {
             System.out.print(changeMenuText);
             do {
-                switch (info = ModelCreator.createChar()) {
+                switch (input = ModelCreator.createChar()) {
                     case '1':
                         System.out.println("<-CHANGE-NAME->");
                         mod.changeName(fullID);
@@ -129,17 +137,28 @@ public class Main {
                         break;
                 }
                 System.out.print(changeMenuText);
-            } while (info != '0');
-        } else LogHelper.logError("The person with ID: " + fullID + " does not exists!");
+            } while (input != '0');
+        } else LogHelper.logError("The person with ID: " + fullID + " does not exist\n" +
+                "\t\t\t\t\t\t\t\t\t  or has been deleted from the 'existing persons' named graph.");
     }
 
     public static void deletePerson(ModelCreator mod) throws IOException {
-        System.out.println("<-DELETE-PERSON->");
+        System.out.println("<-DELETE-A-PERSON->");
         mod.deletePerson();
     }
 
     public static void deleteAllPersons(ModelCreator mod) throws IOException {
-        System.out.println("<-DELETE-ALL PERSONS->");
+        System.out.print(deleteMenuText);
+        char input;
+            do {
+                switch (input = ModelCreator.createChar()) {
+                    case '1':
+                        mod.deleteAllPersons();
+                        break;
+                    case '2':default:
+                }
+                System.out.print(deleteMenuText);
+            } while (input != '0');
         mod.deleteAllPersons();
     }
 
