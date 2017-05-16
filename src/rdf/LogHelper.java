@@ -3,6 +3,9 @@ package rdf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Created by Peter & Natalia.
+ */
 public class LogHelper {
 	private static Logger logger = LoggerFactory.getLogger("SemTechRDF Logger"); {}
 

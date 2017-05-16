@@ -158,11 +158,11 @@ public class Queries {
     protected void deleteAllPersonsG() {
         updateDB(prefixesDefault +
                 "DELETE {" +
-                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o.}} " +
+                "GRAPH <" + nsExPersonsG + "> {?subject ?predicate ?object.}} " +
                 "INSERT {" +
-                "GRAPH <" + nsDelPersonsG + "> {?s ?p ?o.}} " +
+                "GRAPH <" + nsDelPersonsG + "> {?subject ?predicate ?object.}} " +
                 "WHERE {" +
-                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o.}} "
+                "GRAPH <" + nsExPersonsG + "> {?subject ?predicate ?object.}} "
         );
     }
 

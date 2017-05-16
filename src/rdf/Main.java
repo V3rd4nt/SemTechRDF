@@ -39,13 +39,13 @@ public class Main {
             "\t(1) gender\n" +
             "\t(2) location\n" +
             "\t(0) cancel\n" +
-            "\t:";
+            "\t: ";
 
     private final static String deleteMenuText = "\n<-DELETE-ALL-PERSONS->\n" +
             "Are you sure to delete all persons?:\n" +
             "\t(1) yes\n" +
             "\t(2) no\n" +
-            "\t:";
+            "\t: ";
 
     public static void main (String[] args) throws IOException {
         System.out.println("<-RDF-PERSON-DATABASE->");
