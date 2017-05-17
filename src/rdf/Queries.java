@@ -45,7 +45,7 @@ public class Queries {
         updateDB(prefixesDefault + prefixPersons +
                 "INSERT DATA { " +
                 "person:" + fullID + " a foaf:Person. " +
-                "person:" + fullID + " foaf:hasID '" + fullID + "'. "+
+                "person:" + fullID + " foaf:hasID \"" + fullID + "\". "+
                 "}");
         LogHelper.logInfo("Created person resource with ID: " + fullID);
     }
@@ -53,7 +53,7 @@ public class Queries {
     // SET PERSON DATA
     private void addProperty(String fullID, String nameSpace, String property, String value) {
         updateDB(prefixesDefault + prefixProperties + prefixPersons +
-                "INSERT DATA { person:" + fullID + " " + nameSpace + ":" + property +" '" + value + "'. }");
+                "INSERT DATA { person:" + fullID + " " + nameSpace + ":" + property +" \"" + value + "\". }");
     }
 
     protected void setName(String fullID, String name) {
@@ -85,10 +85,10 @@ public class Queries {
     private void changeProperty(String fullID, String nameSpace, String property, String value) {
         updateDB(prefixesDefault + prefixProperties +
                 "DELETE { ?person " + nameSpace + ":" + property +" ?value. } " +
-                "INSERT { ?person " + nameSpace + ":" + property + " '" + value + "'. } " +
+                "INSERT { ?person " + nameSpace + ":" + property + " \"" + value + "\". } " +
                 "WHERE { " +
                 "?person a foaf:Person. " +
-                "?person foaf:hasID '" + fullID + "'. " +
+                "?person foaf:hasID \"" + fullID + "\". " +
                 "?person " + nameSpace + ":" + property + " ?value. " +
                 "}");
     }
@@ -145,7 +145,7 @@ public class Queries {
                 "}}" +
                 "WHERE { " +
                 "?person a foaf:Person. " +
-                "?person foaf:hasID '" + fullID + "'. " +
+                "?person foaf:hasID \"" + fullID + "\". " +
                 "?person foaf:hasID ?fullID. " +
                 "?person foaf:name ?name. " +
                 "?person foaf:gender ?gender. " +
@@ -158,18 +158,18 @@ public class Queries {
     protected void deleteAllPersonsG() {
         updateDB(prefixesDefault +
                 "DELETE { " +
-                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o }} " +
+                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o.}} " +
                 "INSERT { " +
-                "GRAPH <" + nsDelPersonsG + "> {?s ?p ?o }} " +
+                "GRAPH <" + nsDelPersonsG + "> {?s ?p ?o.}} " +
                 "WHERE { " +
-                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o }} "
+                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o.}} "
         );
     }
 
     protected void deletePersonG(String fullID) throws IOException {
         updateDB(prefixesDefault + prefixProperties +
                 "DELETE { " +
-                "GRAPH <" + nsExPersonsG + "> {" +
+                "GRAPH <" + nsExPersonsG + "> { " +
                 "?person a foaf:Person. " +
                 "?person foaf:hasID ?fullID. " +
                 "?person foaf:name ?name. " +
@@ -193,7 +193,7 @@ public class Queries {
                 "WHERE { " +
                 "GRAPH <" + nsExPersonsG + "> { " +
                 "?person a foaf:Person. " +
-                "?person foaf:hasID '" + fullID + "'. " +
+                "?person foaf:hasID \"" + fullID + "\". " +
                 "?person foaf:hasID ?fullID. " +
                 "?person foaf:name ?name. " +
                 "?person foaf:gender ?gender. " +
@@ -208,7 +208,7 @@ public class Queries {
     private void addRelation(String fullID, String nameSpace, String property, String fullID_) {
         // add relation to default graph
         updateDB(prefixesDefault + prefixProperties + prefixPersons +
-                "INSERT DATA { " + "" +
+                "INSERT DATA { " +
                 "person:" + fullID + " " + nameSpace + ":" + property + " person:" + fullID_ + ". " +
                 "}");
         // add relation to existing persons graph
@@ -232,7 +232,7 @@ public class Queries {
                 "} " +
                 "WHERE { " +
                 "?person a foaf:Person. " +
-                "?person foaf:hasID '" + fullID + "'. " +
+                "?person foaf:hasID \"" + fullID + "\". " +
                 "}");
         // delete relation from existing graph
         updateDB(prefixesDefault + prefixProperties + prefixPersons +
@@ -243,7 +243,7 @@ public class Queries {
                 "WHERE { " +
                 "GRAPH <" + nsExPersonsG + "> { " +
                 "?person a foaf:Person. " +
-                "?person foaf:hasID '" + fullID + "'. " +
+                "?person foaf:hasID \"" + fullID + "\". " +
                 "}}");
     }
 
@@ -256,7 +256,7 @@ public class Queries {
         return (output(prefixesDefault +
                 "ASK { " +
                 "?person a foaf:Person. " +
-                "?person foaf:hasID '" + fullID + "'. }", 2));
+                "?person foaf:hasID \"" + fullID + "\". }", 2));
     }
 
     protected boolean personExistsG(String fullID) {
@@ -264,14 +264,14 @@ public class Queries {
                 "ASK { " +
                 "GRAPH <" + nsExPersonsG + "> { " +
                 "?person a foaf:Person. " +
-                "?person foaf:hasID '" + fullID + "'. }}", 2));
+                "?person foaf:hasID \"" + fullID + "\". }}", 2));
     }
 
     protected void listPersonProperty(String fullID, String nameSpace, String property) {
         output(prefixesDefault + prefixProperties +
                 "SELECT * WHERE { " +
                 "?person a foaf:Person. " +
-                "?person foaf:hasID '" + fullID + "'. " +
+                "?person foaf:hasID \"" + fullID + "\". " +
                 "?person " + nameSpace + ":" + property + " ?" + property + ". }", 1);
 
     }
@@ -279,7 +279,7 @@ public class Queries {
     protected void listGraph(String nsPersonG) {
         output(prefixesDefault +
                 "SELECT * WHERE { " +
-                "GRAPH <" + nsPersonG + "> { ?subject ?predicate ?object }. }", 1);
+                "GRAPH <" + nsPersonG + "> { ?s ?p ?o. }}", 1);
     }
 
     protected void filter(int mode) throws IOException {
@@ -319,7 +319,7 @@ public class Queries {
                         "?person foaf:hasID ?id. " +
                         "?person foaf:name ?name. " +
                         "?person foaf:hasAddress ?address. " +
-                        "FILTER regex(str(?address), '" + locationInput + "', 'i'). " +
+                        "FILTER regex(str(?address), \"" + locationInput + "\", 'i'). " +
                         "}", 1);;
                 break;
             default: displayChoiceError(mode);

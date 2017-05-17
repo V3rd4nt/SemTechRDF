@@ -120,7 +120,7 @@ public class ModelCreator {
             queries.addNewPersonG(fullID);
         }
         LogHelper.logInfo("Added person resource with ID: " + fullID + " to\n" +
-                "\t\t\t\t\t\t\t\t\t  the 'existing persons' named graph");
+                "\t\t\t\t\t\t\t\t   the 'existing persons' named graph");
     }
 
     private void modifyFriend(String fullID, int mode) throws IOException {
@@ -329,6 +329,7 @@ public class ModelCreator {
         setBirthday("1111010101", "01.01.1992");
         setAddress("1111010101", "Hauptstraße 1, 4020 Linz");
         setCompany("1111010101", "Johannes Kepler University");
+        addPersonToGraph("1111010101");
         addFriend("1111010101", "2222020202");
         createPerson("2222020202");
         setName("2222020202", "Markus");
@@ -336,6 +337,7 @@ public class ModelCreator {
         setBirthday("2222020202", "16.05.1985");
         setAddress("2222020202", "Seitenstraße 1, 4030 Linz");
         setCompany("2222020202", "FH Hagenberg");
+        addPersonToGraph("2222020202");
         addFriend("2222020202", "3333030303");
         addFriend("2222020202", "1111010101");
         createPerson("3333030303");
@@ -344,6 +346,7 @@ public class ModelCreator {
         setBirthday("3333030303", "27.11.1999");
         setAddress("3333030303", "Gasse 14, 4010 Linz");
         setCompany("3333030303", "Uni Wien");
+        addPersonToGraph("3333030303");
         addFriend("3333030303", "2222020202");
     }
 }
