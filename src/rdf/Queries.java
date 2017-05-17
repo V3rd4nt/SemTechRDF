@@ -157,12 +157,12 @@ public class Queries {
 
     protected void deleteAllPersonsG() {
         updateDB(prefixesDefault +
-                "DELETE {" +
-                "GRAPH <" + nsExPersonsG + "> {?subject ?predicate ?object.}} " +
-                "INSERT {" +
-                "GRAPH <" + nsDelPersonsG + "> {?subject ?predicate ?object.}} " +
-                "WHERE {" +
-                "GRAPH <" + nsExPersonsG + "> {?subject ?predicate ?object.}} "
+                "DELETE { " +
+                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o }} " +
+                "INSERT { " +
+                "GRAPH <" + nsDelPersonsG + "> {?s ?p ?o }} " +
+                "WHERE { " +
+                "GRAPH <" + nsExPersonsG + "> {?s ?p ?o }} "
         );
     }
 

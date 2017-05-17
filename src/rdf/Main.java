@@ -7,20 +7,23 @@ import java.io.IOException;
  */
 public class Main {
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+
     private final static String mainMenuText = "\n<-MAIN-MENU->\n" +
             "What do you like to do?\n" +
             "\t(1) create a new person\n" +
             "\t(2) change person's information\n" +
             "\t(3) delete a person from the exisitng person graph\n" +
-                    "\t\t\t--> move all triplets of a person to the deleted person graph\n" +
+            ANSI_BLUE + "\t\t\t--> move all triplets of a person to the deleted person graph\n" + ANSI_RESET +
             "\t(4) delete all persons\n" +
-                    "\t\t\t--> move all person triplets to the deleted person graph\n" +
+            ANSI_BLUE +         "\t\t\t--> move all person triplets to the deleted person graph\n" + ANSI_RESET +
             "\t(5) list all persons\n" +
-                    "\t\t\t--> graph independent, Output in TURTLE notation\n" +
+            ANSI_BLUE +         "\t\t\t--> graph independent, Output in TURTLE notation\n" + ANSI_RESET +
             "\t(6) list all triplets in all graphs\n" +
-                    "\t\t\t--> Output in TURTLE notation\n" +
+            ANSI_BLUE +         "\t\t\t--> Output in TURTLE notation\n" + ANSI_RESET +
             "\t(7) filter the persons listed in TDB by spedified criteria\n" +
-            		"\t\t\t--> graph independent filtering\n" +
+            ANSI_BLUE + 		"\t\t\t--> graph independent filtering\n" + ANSI_RESET +
             "\t(0) exit program\n" +
             "\t: ";
     private final static String changeMenuText = "\n<-CHANGE-PERSON-INFO->\n" +
@@ -55,7 +58,6 @@ public class Main {
         do {
             switch (input = ModelCreator.createChar()) {
                 case '1':
-                    mod.createDummyPersons();
                     createPerson(mod);
                     break;
                 case '2':
@@ -77,6 +79,10 @@ public class Main {
                 case '7':
                     filterPersons(mod);
                     break;
+                case 'd':
+                    // hidden command
+                    mod.createDummyPersons();
+                    break;
                 case '0':
                     System.exit(0);
                 default:
@@ -95,7 +101,7 @@ public class Main {
 
     public static void changePerson(ModelCreator mod) throws IOException {
         System.out.println("\n<-CHANGE-PERSON-INFO->");
-        System.out.print("Enter the name of the person you want to change information for: ");
+        System.out.print("Enter the ID of the person you want to change information for: ");
         String fullID = ModelCreator.createString();
         char input;
         if (mod.personExists(fullID) && mod.personExistsInGraph(fullID)) {
@@ -154,12 +160,10 @@ public class Main {
                 switch (input = ModelCreator.createChar()) {
                     case '1':
                         mod.deleteAllPersons();
-                        break;
                     case '2':default:
                 }
                 System.out.print(deleteMenuText);
-            } while (input != '0');
-        mod.deleteAllPersons();
+            } while (input != '1' && input != '2');
     }
 
     public static void filterPersons(ModelCreator mod) throws IOException {
