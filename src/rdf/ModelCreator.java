@@ -29,7 +29,7 @@ public class ModelCreator {
     protected final static String companyText = "Enter a Workplace: ";
     protected final static String errorMsg = "Sorry, that's not a valid input. Please try again: ";
     protected final static String errorMsgGender = "Sorry, that's not valid a valid input.\n" +
-            "\t\t\t\t\t\t\t\t\t  A gender must be (m)ale or (f)emale. Please try again: ";
+            "\t\t\t\t\t\t\t\t   A gender must be (m)ale or (f)emale. Please try again: ";
 
     private String nsPersons = "http://semTechRDF.org/persons/";
     private String nsProperties = "http://semTechRDF.org/properties.rdf#";
@@ -143,7 +143,7 @@ public class ModelCreator {
             if (fullID.equals(fullID_friend)) {
                 LogHelper.logError("It's not allowed to add onself as friend!");
             } else LogHelper.logError("The person with ID: " + fullID_friend + " does not exist\n" +
-                    "\t\t\t\t\t\t\t\t\t  or has been deleted from the 'existing persons' named graph.");
+                    "\t\t\t\t\t\t\t\t   or has been deleted from the 'existing persons' named graph.");
         }
     }
 

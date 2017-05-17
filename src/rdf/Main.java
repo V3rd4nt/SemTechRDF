@@ -145,7 +145,7 @@ public class Main {
                 System.out.print(changeMenuText);
             } while (input != '0');
         } else LogHelper.logError("The person with ID: " + fullID + " does not exist\n" +
-                "\t\t\t\t\t\t\t\t\t  or has been deleted from the 'existing persons' named graph.");
+                "\t\t\t\t\t\t\t\t   or has been deleted from the 'existing persons' named graph.");
     }
 
     public static void deletePerson(ModelCreator mod) throws IOException {
