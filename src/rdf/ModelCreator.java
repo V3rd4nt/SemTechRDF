@@ -327,7 +327,7 @@ public class ModelCreator {
             setName("1111010101", "Johannes");
             setGender("1111010101", "male");
             setBirthday("1111010101", "01.01.1992");
-            setAddress("1111010101", "Hauptstraße 1, 4020 Linz");
+            setAddress("1111010101", "Wienerstraße 264, 4020 Linz, Österreich");
             setCompany("1111010101", "Johannes Kepler University");
             addPersonToGraph("1111010101");
             addFriend("1111010101", "2222020202");
@@ -336,7 +336,7 @@ public class ModelCreator {
             setName("2222020202", "Markus");
             setGender("2222020202", "male");
             setBirthday("2222020202", "16.05.1985");
-            setAddress("2222020202", "Seitenstraße 1, 4030 Linz");
+            setAddress("2222020202", "Friedrichsweg 82, 4030 Linz, Österreich");
             setCompany("2222020202", "FH Hagenberg");
             addPersonToGraph("2222020202");
             addFriend("2222020202", "3333030303");
@@ -346,10 +346,27 @@ public class ModelCreator {
             setName("3333030303", "Sandra");
             setGender("3333030303", "female");
             setBirthday("3333030303", "27.11.1999");
-            setAddress("3333030303", "Gasse 14, 4010 Linz");
-            setCompany("3333030303", "Uni Wien");
+            setAddress("3333030303", "Wegnergasse 14, 3100 St. Pölten, Österreich");
+            setCompany("3333030303", "SAP Österreich");
             addPersonToGraph("3333030303");
             addFriend("3333030303", "2222020202");
+        }
+        if (createPerson("4444040404")) {
+            setName("4444040404", "Lisa");
+            setGender("4444040404", "female");
+            setBirthday("4444040404", "06.07.1991");
+            setAddress("4444040404", "Am Amtsplatz 97a, 1020 Wien, Österreich");
+            setCompany("4444040404", "TU Wien");
+            addPersonToGraph("4444040404");
+            addFriend("4444040404", "3333030303");
+        }
+        if (createPerson("5555050505")) {
+            setName("5555050505", "Lukas");
+            setGender("5555050505", "male");
+            setBirthday("5555050505", "03.01.1988");
+            setAddress("5555050505", "Stieglerallee 163, 80331 München, Deutschland");
+            setCompany("5555050505", "BMW Motors");
+            addPersonToGraph("5555050505");
         }
     }
 }
