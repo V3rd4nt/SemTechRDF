@@ -323,30 +323,33 @@ public class ModelCreator {
 
     public void createDummyPersons() throws IOException {
 
-        createPerson("1111010101");
-        setName("1111010101", "Johannes");
-        setGender("1111010101", "male");
-        setBirthday("1111010101", "01.01.1992");
-        setAddress("1111010101", "Hauptstraße 1, 4020 Linz");
-        setCompany("1111010101", "Johannes Kepler University");
-        addPersonToGraph("1111010101");
-        addFriend("1111010101", "2222020202");
-        createPerson("2222020202");
-        setName("2222020202", "Markus");
-        setGender("2222020202", "male");
-        setBirthday("2222020202", "16.05.1985");
-        setAddress("2222020202", "Seitenstraße 1, 4030 Linz");
-        setCompany("2222020202", "FH Hagenberg");
-        addPersonToGraph("2222020202");
-        addFriend("2222020202", "3333030303");
-        addFriend("2222020202", "1111010101");
-        createPerson("3333030303");
-        setName("3333030303", "Sandra");
-        setGender("3333030303", "female");
-        setBirthday("3333030303", "27.11.1999");
-        setAddress("3333030303", "Gasse 14, 4010 Linz");
-        setCompany("3333030303", "Uni Wien");
-        addPersonToGraph("3333030303");
-        addFriend("3333030303", "2222020202");
+        if (createPerson("1111010101")) {
+            setName("1111010101", "Johannes");
+            setGender("1111010101", "male");
+            setBirthday("1111010101", "01.01.1992");
+            setAddress("1111010101", "Hauptstraße 1, 4020 Linz");
+            setCompany("1111010101", "Johannes Kepler University");
+            addPersonToGraph("1111010101");
+            addFriend("1111010101", "2222020202");
+        }
+        if (createPerson("2222020202")) {
+            setName("2222020202", "Markus");
+            setGender("2222020202", "male");
+            setBirthday("2222020202", "16.05.1985");
+            setAddress("2222020202", "Seitenstraße 1, 4030 Linz");
+            setCompany("2222020202", "FH Hagenberg");
+            addPersonToGraph("2222020202");
+            addFriend("2222020202", "3333030303");
+            addFriend("2222020202", "1111010101");
+        }
+        if (createPerson("3333030303")) {
+            setName("3333030303", "Sandra");
+            setGender("3333030303", "female");
+            setBirthday("3333030303", "27.11.1999");
+            setAddress("3333030303", "Gasse 14, 4010 Linz");
+            setCompany("3333030303", "Uni Wien");
+            addPersonToGraph("3333030303");
+            addFriend("3333030303", "2222020202");
+        }
     }
 }
